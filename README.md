@@ -75,3 +75,9 @@ Contributions is still on hold until I prepare MVP, but if you want to try it it
 - docker-compose up -d
 - yarn build
 - yarn start
+
+_Ideas_
+
+- gitops approach using jenkinsx, helm, eks or terraform/terragrunt atlantis and argocd
+- frontends served by s3 bucket
+- e-wallet on etherum blockchain
