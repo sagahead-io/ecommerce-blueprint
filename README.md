@@ -7,7 +7,7 @@ Cloud native microservice architecture based e-commerce platform blueprint
 - [vscode](https://github.com/microsoft/vscode)
 - [yarn v2 (berry)](https://yarnpkg.com/features/pnp) with pnp
 - typescript
-- type-grapqhl
+- [type-graphql](https://github.com/MichalLytek/type-graphql)
 - [fastify + mercurius](https://github.com/mercurius-js/mercurius)
 - [Auth0](https://auth0.com)
 - postgres
