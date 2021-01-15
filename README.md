@@ -78,6 +78,12 @@ Contributions is still on hold until I prepare MVP, but if you want to try it it
 
 _Ideas_
 
+- sophisticated data and workflows
 - gitops approach using jenkinsx, helm, eks or terraform/terragrunt atlantis and argocd
 - frontends served by s3 bucket
 - e-wallet on etherum blockchain
+- gRPC
+- istio for service discovery
+- react native app
+- service that manipulates data using mongodb
+- cqrs (a bit risky and complex)
