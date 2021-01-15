@@ -35,15 +35,16 @@ TODO...
 ## Contribution
 
 Contributions is still on hold until I prepare MVP, but if you want to try it it:
-** requirements **
 
-- vscode
-- node >=14
-- docker-compose
+- requirements \*
 
-** run **
+* vscode
+* node >=14
+* docker-compose
 
-- git clone
-- docker-compose up -d
-- yarn build
-- yarn start
+- run \*
+
+* git clone
+* docker-compose up -d
+* yarn build
+* yarn start
