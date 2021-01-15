@@ -6,12 +6,12 @@ This monorepo blueprint is based on microservices architecture paradigm. Decoupl
 
 Services own the data and can't share databases between, kinda database per service approach. Although services are decoupled, there is still tiny wires between them graphql api-gateway allows to delegate synchronous schema handlings to other services. Events/commands that passes through pubsub has some sort identification for good traceability, something like event/command DAO's. Even if microservice world means everything decoupled, with the help of yarn v2 (berry) is easier to share libs that is common for all the services like server configuration libs, loggers and other utility functions.
 
-One more important thing in this blueprint - to achieve centralized auth handling, field level auth and decorators. For this to implement properly I am relying on auth0, redis, authGuard middlewares. Thanks to smart fastify-gql context sharing approach, it is possible to implement field level aut this way.
+One more important thing in this blueprint - to achieve centralized auth handling, field level auth and decorators. For this to implement properly I am relying on auth0, redis, authGuard middlewares. Thanks to smart fastify-gql context sharing approach, it is possible to implement field level auth this way.
 
-There are/will be more good things in this blueprint. Subscriptions and websockets, api schema generation, frontends state handling without redux, saga's and orchestration examples for long running backend tasks, improved pubsub mechanism using AWS SNS+SQS and more. React Native for app. Maybe a generation CLI in the future for easier maintenance less of copy pasting.
+There are/will be more good things in this blueprint. Subscriptions and websockets, api schema generation, frontends state handling without redux, saga's and orchestration examples for distributed workflows or long running tasks, improved pubsub mechanism using AWS SNS+SQS and more. React Native for app. Maybe a generation CLI in the future for easier maintenance less of copy pasting.
 
 This is opinionated blueprint.
-This is alpha version, development in progress.
+An alpha version, development in progress.
 The blueprint is inspired by the book: [Microservices Patterns](https://microservices.io/about.html)
 
 _Stack_
