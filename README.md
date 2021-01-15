@@ -12,9 +12,9 @@ There are/will be more good things in this blueprint. Subscriptions and websocke
 
 This is opinionated blueprint.
 An alpha version, development in progress.
-The blueprint is inspired by the book: [Microservices Patterns](https://microservices.io/about.html)
+The blueprint is inspired by the book: [Microservices Patterns](https:#microservices.io/about.html)
 
-_Stack_
+**Stack**
 
 - vscode
 - yarn v2 (berry) with pnp
@@ -32,19 +32,46 @@ _Stack_
 
 TODO...
 
+**folders structure**
+
+```
+. # root
+├── frontends  # fronteds workspace @frontends/*
+│   ├── admin # frontend admin workspace @frontends/admin and source code
+│   │   └── src
+│   └── web # frontend web workspace @frontends/web and source code
+│       └── src
+├── libs
+│   ├── build-federated-schema # shared lib generates federated graphql schema @libs/build-federated-schema
+│   │   └── src
+│   ├── federated-server # shared lib fastify server for services @libs/federated-server
+│   │   └── src
+│   ├── integrate-auth0 # shared lib auth0 integration/installation tooling @libs/integrate-auth0
+│   │   └── src
+│   └── logger # shared lib logger just a simple logger @libs/logger
+│       └── src
+└── services # services catalog @services/*
+    ├── apigw # api gateway server @services/apigw source
+    │   └── src
+    ├── auth # auth service @services/auth source
+    │   └── src
+    └── workflows # workflows/sagas/orchestrator service @services/workflows source
+        └── src
+```
+
 ## Contribution
 
 Contributions is still on hold until I prepare MVP, but if you want to try it it:
 
-- requirements \*
+**requirements**
 
-* vscode
-* node >=14
-* docker-compose
+- vscode
+- node >=14
+- docker-compose
 
-- run \*
+**run**
 
-* git clone
-* docker-compose up -d
-* yarn build
-* yarn start
+- git clone
+- docker-compose up -d
+- yarn build
+- yarn start
