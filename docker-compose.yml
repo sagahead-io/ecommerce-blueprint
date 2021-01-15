@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  mcld.mgmt.db:
+  ecomm.db:
     image: 'postgres:13.1-alpine'
     environment:
       - POSTGRES_USER=root
@@ -11,7 +11,7 @@ services:
     volumes:
       - ./tmp/postgres-data:/var/lib/postgresql/data
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-  mcld.mgmt.aws:
+  ecomm.aws:
     image: localstack/localstack:latest
     ports:
       - '4575:4575' # SNS
