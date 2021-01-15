@@ -20,4 +20,4 @@ COPY --from=bundler /usr/src/app/services/workflows/bundle .
 
 EXPOSE 80
 
-CMD ["node", "entryppint.js"]
+CMD ["node", "entrypoint.js"]
