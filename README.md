@@ -12,7 +12,7 @@ There are/will be more good things in this blueprint. Subscriptions and websocke
 
 This is opinionated blueprint.
 An alpha version, development in progress.
-The blueprint is inspired by the book: [Microservices Patterns](https:#microservices.io/about.html)
+The blueprint is inspired by the book: [Microservices Patterns](https://microservices.io/about.html)
 
 **Stack**
 
