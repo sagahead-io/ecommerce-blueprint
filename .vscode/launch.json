@@ -1,0 +1,118 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+     // Library logger debugging configuration
+     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "libs: integrate-auth0 test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/libs/integrate-auth0/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/libs/integrate-auth0"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "libs: logger test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/libs/logger/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/libs/logger"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "libs: build-federated-schema test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/libs/build-federated-schema/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/libs/build-federated-schema"
+    },
+    // Service auth debugging configuration
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "svc: auth test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/services/auth/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/services/auth"
+    },
+    {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "svc: auth",
+        "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "args": ["${workspaceFolder}/services/auth/src/index.ts"],
+        "env": {
+          "TS_NODE_PROJECT": "services/auth/tsconfig.json"
+        },
+    },
+    // Service api-gateway debugging configuration
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "svc: apigw test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/services/apigw/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/services/apigw"
+    },
+    {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "svc: apigw",
+        "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "args": ["${workspaceFolder}/services/apigw/src/index.ts"]
+    },
+    // Service workflows engine
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "svc: workflows test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/services/workflows/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/services/workflows"
+    },
+    {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "svc: workflows",
+        "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "args": ["${workspaceFolder}/services/workflows/src/index.ts"],
+        "env": {
+          "TS_NODE_PROJECT": "services/workflows/tsconfig.json",
+          "NODE_ENV": "development"
+        },
+    }
+  ]
+}

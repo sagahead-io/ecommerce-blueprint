@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "pretty": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "target": "esnext",
+    "lib": ["esnext", "esnext.asynciterable"],
+    "moduleResolution": "node",
+    "declaration": true,
+    "inlineSourceMap": true,
+		"inlineSources": true,
+		"importHelpers": true,
+		"downlevelIteration": false,
+		"alwaysStrict": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+    "noStrictGenericChecks": false,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+		"noImplicitThis": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		/* Report error when not all code paths in function return a value. */
+    "noImplicitReturns": true,
+		/* Report errors for fallthrough cases in switch statement. */
+    "noFallthroughCasesInSwitch": false,
+    /* Resolve 'keyof' to string valued property names only (no numbers or symbols). */
+    "keyofStringsOnly": true,
+    /* Do not report errors on unreachable code */
+    "allowUnreachableCode": true,
+    /* Do not report errors on unused labels. */
+    "allowUnusedLabels": false,
+    "useDefineForClassFields": false,
+    "baseUrl": ".",
+		"allowSyntheticDefaultImports": true,
+		/* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "esModuleInterop": true,
+		"allowUmdGlobalAccess": true,
+    "experimentalDecorators": true,
+		/* Enables experimental support for emitting type metadata for decorators. */
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+  }
+}

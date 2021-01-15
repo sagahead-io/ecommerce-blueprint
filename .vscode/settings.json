@@ -1,0 +1,26 @@
+{
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "eslint.packageManager": "yarn",
+  "prettier.packageManager": "yarn",
+  "npm.packageManager": "yarn",
+  "eslint.enable": true,
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.nodePath": ".yarn/sdks",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": true,
+  "debug.javascript.usePreview": true
+}

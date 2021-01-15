@@ -1,0 +1,14 @@
+.vscode
+tmp
+docker-entrypoint-initdb.d
+**/dist
+dist
+node_modules
+**/node_modules
+charts
+**/Dockerfile
+**/coverage
+**/junit.xml
+**/bundle
+**/bundle.tgz
+.DS_Store

@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  mcld.mgmt.db:
+    image: 'postgres:13.1-alpine'
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_MULTIPLE_DATABASES=auth,workflows
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./tmp/postgres-data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  mcld.mgmt.aws:
+    image: localstack/localstack:latest
+    ports:
+      - '4575:4575' # SNS
+      - '4576:4576' # SQS
+    environment:
+      - SERVICES=sqs,sns
+      - DEFAULT_REGION=eu-central-1
+      - AWS_DEFAULT_REGION=eu-central-1
+      - AWS_EXECUTION_ENV=True
+    volumes:
+      - './tmp/localstack:/tmp/localstack'
+  mgmt.mcld.redis:
+    image: redis
+    command: redis-server --requirepass password
+    ports:
+      - '6379:6379'
+    volumes:
+      - './tmp/cache:/var/lib/redis'
+  mgmt.mcld.adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '50001:8080'

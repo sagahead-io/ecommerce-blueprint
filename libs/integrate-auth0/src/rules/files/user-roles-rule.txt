@@ -1,0 +1,99 @@
+async function(user, context, callback) {
+  const count = context.stats && context.stats.loginsCount ? context.stats.loginsCount : 0;
+  console.log(`${user.email} login count`, count);
+  
+  if (count > 1) {
+    return callback(null, user, context);
+  }
+
+  if (
+    !user.email ||
+    (user.app_metadata && user.app_metadata.auth0Roles && user.app_metadata.auth0Roles.length)
+  ) {
+    return callback(null, user, context);
+  }
+
+  const auth0c = require('auth0@2.19.0');
+  const scopes = {
+    scope: 'read:users update:users create:users read:roles',
+    audience: `${auth0.baseUrl}/`,
+  };
+
+  const authentication = new auth0c.AuthenticationClient({
+    baseUrl: `https://${auth0.domain}`,
+    clientId: configuration.CLIENT_ID,
+    clientSecret: configuration.CLIENT_SECRET,
+    ...scopes,
+    domain: auth0.domain,
+  });
+  const getManamgentClient = () => {
+    return new Promise((resolve, reject) => {
+      authentication.clientCredentialsGrant(scopes, (err, response) => {
+        if (err || !response.access_token) {
+          reject(err);
+        }
+
+        resolve(
+          new auth0c.ManagementClient({
+            domain: auth0.domain,
+            token: response.access_token,
+          })
+        );
+      });
+    });
+  };
+
+  const management = await getManamgentClient();
+
+  let roles;
+  let rolesMap;
+
+  try {
+    roles = await management.getRoles();
+    rolesMap = roles.reduce((prev, next) => {
+      return { ...prev, ...{ [next.name]: next.id } };
+    }, {});
+  } catch (e) {
+    console.log('error in roles map step', e);
+    callback(e);
+  }
+
+  user.app_metadata = user.app_metadata || {};
+
+  const addRolesToUser = function(user) {
+    const admins = <replace with admins email list>;
+    const testEmails = ['integration.team'];
+
+    let role = roles.find(role => role.name === 'user');
+
+    if (
+      (user.email && admins.includes(user.email)) ||
+      testEmails.includes(user.email.split('@')[1])
+    ) {
+      const adminRole = roles.find(role => role.name === 'admin');
+      return [role.name, adminRole.name];
+    }
+
+    return [role.name];
+  };
+
+  const userRoles = addRolesToUser(user);
+
+  user.app_metadata.auth0Roles = userRoles;
+  //console.log('user email', user.email);
+	//console.log('available roles', JSON.stringify(roles));
+  //console.log('available rolesMap', rolesMap);
+  //console.log(`${user.email} got roles`, userRoles);
+  //console.log(`${user.email} app_metadata`, user.app_metadata);
+  
+  try {
+    const body = { roles: [rolesMap[userRoles[0]]] };
+    //console.log(`${user.email} roles assign req body`, body);
+    await management.assignRolestoUser({ id: user.user_id }, body);
+    await auth0.users.updateAppMetadata(user.user_id, user.app_metadata);
+    callback(null, user, context);
+  } catch (e) {
+    console.log('error in roles update step', e);
+    callback(e);
+  }
+}
