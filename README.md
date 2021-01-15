@@ -1,5 +1,38 @@
 # Sagahead.io opinionated e-commerce monorepo blueprint
 
+Cloud native microservice architecture based e-commerce platform blueprint
+
+## Stack
+
+- [vscode](https://github.com/microsoft/vscode)
+- [yarn v2 (berry)](https://yarnpkg.com/features/pnp) with pnp
+- typescript
+- type-grapqhl
+- [fastify + mercurius](https://github.com/mercurius-js/mercurius)
+- [Auth0](https://auth0.com)
+- postgres
+- docker
+- [localstack](https://github.com/localstack/localstack) (for free development using aws)
+- react
+- redis
+
+## Installation
+
+**requirements**
+
+- vscode
+- node >=14
+- docker-compose
+
+**run**
+
+- git clone
+- docker-compose up -d
+- yarn build
+- yarn start
+
+## Justification
+
 The idea is to have e-commerce type api/frontends blueprint. Over the years of microservices development, from time to time I was running into distributed monoliths, devops nightmares, sharing is bad until we go full wet, cyclic dependencies, one service can break everything and all other problems that microservices brings to the world, with this blueprint I would like to tackle the problems my way.
 
 This monorepo blueprint is based on microservices architecture paradigm. Decoupled services that has two adapters to talk, one synchronous another asynchronous or only asynchronous. The downstream services are accessible only via api gateway that is based on graphql. Api gateway is kinda federating downstream schemas and generating the api schema for the frontends. This approach helps to release API changes without any break in the frontends.
@@ -14,21 +47,7 @@ This is opinionated blueprint.
 An alpha version, development in progress.
 The blueprint is inspired by the book: [Microservices Patterns](https://microservices.io/about.html)
 
-**Stack**
-
-- vscode
-- yarn v2 (berry) with pnp
-- typescript
-- type-grapqhl
-- fastify + mercurius
-- auth0
-- postgres
-- docker
-- localstack (for free development using aws)
-- react
-- redis
-
-## Docs
+## Development
 
 TODO...
 
@@ -59,24 +78,7 @@ TODO...
         └── src
 ```
 
-## Contribution
-
-Contributions is still on hold until I prepare MVP, but if you want to try it it:
-
-**requirements**
-
-- vscode
-- node >=14
-- docker-compose
-
-**run**
-
-- git clone
-- docker-compose up -d
-- yarn build
-- yarn start
-
-_Ideas_
+## Ideas
 
 - sophisticated data and workflows
 - gitops approach using jenkinsx, helm, eks or terraform/terragrunt atlantis and argocd
@@ -87,3 +89,7 @@ _Ideas_
 - react native app
 - service that manipulates data using mongodb
 - cqrs (a bit risky and complex)
+
+## Contribution
+
+Contributions is still on hold until I prepare MVP
