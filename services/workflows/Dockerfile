@@ -18,6 +18,4 @@ WORKDIR usr/src/app
 
 COPY --from=bundler /usr/src/app/services/workflows/bundle .
 
-EXPOSE 80
-
 CMD ["node", "entrypoint.js"]

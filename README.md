@@ -1,20 +1,21 @@
-# Sagahead.io opinionated e-commerce monorepo blueprint
+# Sagahead.io opinionated monorepo e-commerce blueprint
 
-Cloud native microservice architecture based e-commerce platform blueprint
+Cloud native, microservice architecture based, e-commerce platform blueprint
 
 ## Stack
 
-- [vscode](https://github.com/microsoft/vscode)
-- [yarn v2 (berry)](https://yarnpkg.com/features/pnp) with pnp
-- typescript
-- [type-graphql](https://github.com/MichalLytek/type-graphql)
-- [fastify + mercurius](https://github.com/mercurius-js/mercurius)
+- NodeJS
+- [Vscode](https://github.com/microsoft/vscode)
+- [Yarn v2 (berry)](https://yarnpkg.com/features/pnp) with pnp
+- Typescript
+- [TypeGraphql](https://github.com/MichalLytek/type-graphql)
+- [Fastify + Mercurius](https://github.com/mercurius-js/mercurius)
 - [Auth0](https://auth0.com)
-- postgres
-- docker
-- [localstack](https://github.com/localstack/localstack) (for free development using aws)
-- react
-- redis
+- Postgres
+- Docker, docker-compose
+- [Localstack](https://github.com/localstack/localstack) (for free development using aws)
+- React
+- Redis
 
 ## Installation
 
@@ -37,7 +38,7 @@ The idea is to have e-commerce type api/frontends blueprint. Over the years of m
 
 This monorepo blueprint is based on microservices architecture paradigm. Decoupled services that has two adapters to talk, one synchronous another asynchronous or only asynchronous. The downstream services are accessible only via api gateway that is based on graphql. Api gateway is kinda federating downstream schemas and generating the api schema for the frontends. This approach helps to release API changes without any break in the frontends.
 
-Services own the data and can't share databases between, kinda database per service approach. Although services are decoupled, there is still tiny wires between them graphql api-gateway allows to delegate synchronous schema handlings to other services. Events/commands that passes through pubsub has some sort identification for good traceability, something like event/command DAO's. Even if microservice world means everything decoupled, with the help of yarn v2 (berry) is easier to share libs that is common for all the services like server configuration libs, loggers and other utility functions.
+Services own the data and can't share databases between, kinda database per service approach. Although services are decoupled, there is still tiny wires between them graphql api-gateway allows to delegate synchronous schema handlings to other services. Events/commands that passes through pubsub has some sort identification for good traceability, something like event/command DTO's. Even if microservice world means everything decoupled, with the help of yarn v2 (berry) is easier to share libs that is common for all the services like server configuration libs, loggers and other utility functions.
 
 One more important thing in this blueprint - to achieve centralized auth handling, field level auth and decorators. For this to implement properly I am relying on auth0, redis, authGuard middlewares. Thanks to smart fastify-gql context sharing approach, it is possible to implement field level auth this way.
 
@@ -47,7 +48,7 @@ This is opinionated blueprint.
 An alpha version, development in progress.
 The blueprint is inspired by the book: [Microservices Patterns](https://microservices.io/about.html)
 
-## Development
+## Development Docs
 
 TODO...
 
@@ -70,7 +71,7 @@ TODO...
 │   └── logger # shared lib logger just a simple logger @libs/logger
 │       └── src
 └── services # services catalog @services/*
-    ├── apigw # api gateway server @services/apigw source
+    ├── api-gateway # api gateway server @services/api-gateway source
     │   └── src
     ├── auth # auth service @services/auth source
     │   └── src
@@ -90,6 +91,14 @@ TODO...
 - service that manipulates data using mongodb
 - cqrs (a bit risky and complex)
 
-## Contribution
+## Contributing
 
-Contributions is still on hold until I prepare MVP
+Bug reports and pull requests are welcome on GitHub at https://github.com/sagahead-io/ecommerce-blueprint/issues. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+## License
+
+The lib is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Code of Conduct
+
+Everyone interacting in the ecommerce-blueprint project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/sagahead-io/ecommerce-blueprint/tree/master/CODE_OF_CONDUCT.md).

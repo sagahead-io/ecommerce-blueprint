@@ -22,3 +22,6 @@ build-error.log
 bundle
 bundle*.tgz
 bundle*.zip
+coverage
+localstack
+yarn-error.log

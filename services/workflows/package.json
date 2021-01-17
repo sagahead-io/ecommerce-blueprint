@@ -2,7 +2,7 @@
   "name": "@services/workflows",
   "version": "0.0.0",
   "main": "dist/index.js",
-  "license": "ISC",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@libs/logger": "workspace:*",

@@ -1,7 +1,33 @@
 {
   "version": "0.2.0",
   "configurations": [
-     // Library logger debugging configuration
+     // Libs debugging configuration
+     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "libs: graphql-snssqs-subscriptions integration",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/libs/graphql-snssqs-subscriptions/jest.config.integration.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/libs/graphql-snssqs-subscriptions"
+    },
+     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "libs: graphql-snssqs-subscriptions test",
+      "runtimeArgs": [
+        "jest",
+        "--config",
+        "${workspaceFolder}/libs/graphql-snssqs-subscriptions/jest.config.js"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "cwd": "${workspaceFolder}/libs/graphql-snssqs-subscriptions"
+    },
      {
       "type": "pwa-node",
       "request": "launch",
@@ -70,23 +96,23 @@
     {
       "type": "pwa-node",
       "request": "launch",
-      "name": "svc: apigw test",
+      "name": "svc: api-gateway test",
       "runtimeArgs": [
         "jest",
         "--config",
-        "${workspaceFolder}/services/apigw/jest.config.js"
+        "${workspaceFolder}/services/api-gateway/jest.config.js"
       ],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/services/apigw"
+      "cwd": "${workspaceFolder}/services/api-gateway"
     },
     {
         "type": "pwa-node",
         "request": "launch",
-        "name": "svc: apigw",
+        "name": "svc: api-gateway",
         "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
         "skipFiles": ["<node_internals>/**", "node_modules/**"],
-        "args": ["${workspaceFolder}/services/apigw/src/index.ts"]
+        "args": ["${workspaceFolder}/services/api-gateway/src/index.ts"]
     },
     // Service workflows engine
     {

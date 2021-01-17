@@ -1,4 +1,6 @@
 import { bootstrapFederatedServer } from '@libs/federated-server'
+import { FastifyRequest } from 'fastify'
+import { getPubSub } from './connectors/pubsub'
 import { HelloResolver } from './resolvers/Hello'
 import { SubscriptionResolver } from './resolvers/Subscription'
 import env from './utils/env'
@@ -20,14 +22,19 @@ const start = async () => {
     //   allowed_origins: ['http://localhost:3000'],
     // })
     // await installAuth0Roles(['valdas.mazrimas@gmail.com'])
+    const pubsub = await getPubSub()
     const result = await bootstrapFederatedServer({
       schemaOpts: {
         resolvers: [HelloResolver, SubscriptionResolver],
       },
-      serverOpts: {
+      adapterOpts: {
         subscription: true,
+        context: (request: FastifyRequest) => ({
+          ...request,
+          pubsub,
+        }),
       },
-      customOpts: {
+      serverOpts: {
         port: env.PORT,
       },
     })

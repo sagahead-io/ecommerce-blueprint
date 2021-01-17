@@ -4,16 +4,17 @@ import mercurius, { MercuriusCommonOptions } from 'mercurius'
 import buildFederatedSchema from '@libs/build-federated-schema'
 import { BuildSchemaOptions } from 'type-graphql'
 
-type CustomOptions = {
+type ServerOptions = {
   port: string | number
+  healthEndpoint?: string
 }
 export interface FederationServerOptions {
   schemaOpts: BuildSchemaOptions
-  serverOpts: MercuriusCommonOptions
-  customOpts: CustomOptions
+  adapterOpts: MercuriusCommonOptions
+  serverOpts: ServerOptions
 }
 
-export const bootstrapFederatedServer = async ({ schemaOpts, serverOpts, customOpts }: FederationServerOptions) => {
+export const bootstrapFederatedServer = async ({ schemaOpts, adapterOpts, serverOpts }: FederationServerOptions) => {
   let result
 
   try {
@@ -25,15 +26,15 @@ export const bootstrapFederatedServer = async ({ schemaOpts, serverOpts, customO
         ...request,
       }),
       federationMetadata: true,
-      ...serverOpts,
+      ...adapterOpts,
     }
     await fastify.register(mercurius, composedServerOptions)
 
-    fastify.get('/health', async () => {
+    fastify.get(serverOpts.healthEndpoint || '/health', async () => {
       return {}
     })
 
-    result = await fastify.listen(customOpts.port)
+    result = await fastify.listen(serverOpts.port)
   } catch (err) {
     throw new Error(err)
   }

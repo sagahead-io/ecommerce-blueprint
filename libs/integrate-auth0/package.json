@@ -9,7 +9,8 @@
     "build": "npm-run-all build:source build:files",
     "build:source": "tsc",
     "build:files": "ncp src/rules/files dist/rules/files",
-    "test": "jest",
+    "test": "npm-run-all test:unit test:integration",
+    "test:unit": "jest",
     "test:integration": "jest -c jest.config.integration.js"
   },
   "keywords": [

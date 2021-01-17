@@ -4,7 +4,7 @@
   "description": "sagahead-ecommerce-blueprint shared node libs logger",
   "main": "dist/index.js",
   "private": true,
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "test": "jest"

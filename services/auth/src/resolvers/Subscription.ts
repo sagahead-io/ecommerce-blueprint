@@ -1,4 +1,3 @@
-import { PubSubEngine } from 'graphql-subscriptions'
 import { Resolver, Query, Mutation, Arg, PubSub, Publisher, Subscription, Root, ResolverFilterData } from 'type-graphql'
 
 import { Notification, NotificationPayload } from '../entities/Notification'
