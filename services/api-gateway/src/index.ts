@@ -4,6 +4,7 @@ import mercurius from 'mercurius'
 import logger from './utils/logger'
 import env from './utils/env'
 import { introspectFederatedSchemas } from './utils/schemaHandling'
+import { GatewayPubSub } from './pubsub/gateway'
 
 const bootstrap = async (): Promise<void> => {
   try {
@@ -28,7 +29,19 @@ const bootstrap = async (): Promise<void> => {
           }
         },
       },
-      subscription: true,
+      subscription: {
+        pubsub: new GatewayPubSub(),
+        onDisconnect: () => {
+          console.log('on disconnect')
+          return
+        },
+        onConnect: (data) => {
+          console.log('on connect', data)
+          return {
+            hi: 'hi',
+          }
+        },
+      },
     })
 
     gateway.get('/health', async () => {

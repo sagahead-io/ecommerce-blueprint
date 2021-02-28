@@ -1,28 +1,25 @@
-import { SNS } from 'aws-sdk'
+import { SQS } from 'aws-sdk'
 import { MessageAttributes, Message } from '@node-ts/bus-messages'
 import { SQSMessageBody } from '@node-ts/bus-sqs/dist/sqs-transport'
+import { TopicArn } from 'aws-sdk/clients/directoryservice'
+import { subscriptionARN } from 'aws-sdk/clients/sns'
+import { QueueArn } from 'aws-sdk/clients/s3'
+import { QueueUrl } from 'aws-sdk/clients/iot'
 
 export type PubSubOptions = {
-  serviceName: string
   batchSize?: number
   processMessagesInBatch?: boolean
-  withSNS?: boolean
-  prefix?: string
 }
 
 export type ExtendedPubSubOptions = {
-  stopped: boolean
-  queueUrl: string
-  dlQueueUrl: string
-  dlQueueArn: string
-  queueArn: string
-  topicArn: string
-  subscriptionArn: string
-  batchSize: number
   processMessagesInBatch: boolean
-  availableTopicsList: SNS.Types.TopicsList
+  batchSize: number
+  subscriptionArns: subscriptionARN[]
+  topicsArnCache: TopicArn[]
+  queuesUrlCache: SQS.Types.QueueUrlList
   topicResolverFn?: (msgName: string) => string
   topicArnResolverFn?: (topic: string) => string
+  queueUrlResolverFn?: (queue: string) => string
 } & PubSubOptions
 
 export type ObjectType = {
@@ -31,13 +28,32 @@ export type ObjectType = {
 
 export { MessageAttributes, Message }
 
+export type DomainMessageType = Message & ObjectType
+
 export interface PubSubMessageBody extends ObjectType {
   id: string
   raw: any
-  domainMessage: Message
+  domainMessage: DomainMessageType
   attributes: MessageAttributes
 }
 
 export type MessageExecutionHandler = (body: PubSubMessageBody[]) => void
 
 export { SQSMessageBody as SNSSQSMessageBody }
+
+export type MessageAddress = {
+  fullAddress: string
+  topicName: string
+  queueName: string
+}
+
+export type SetupPoliciesResult = {
+  formedQueueArn: QueueArn
+  formedDlqQueueArn: QueueArn
+  policy: ObjectType
+}
+
+export type SubscriptionValidationResult = {
+  topicArn: TopicArn
+  queueUrl: QueueUrl
+}

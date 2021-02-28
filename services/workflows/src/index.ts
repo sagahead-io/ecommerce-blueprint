@@ -7,6 +7,7 @@ import { BUS_SYMBOLS, BusModule, ApplicationBootstrap } from '@node-ts/bus-core'
 import { WorkflowRegistry, BusWorkflowModule, BUS_WORKFLOW_SYMBOLS } from '@node-ts/bus-workflow'
 import { BUS_SQS_SYMBOLS, BusSqsModule } from '@node-ts/bus-sqs'
 import { BusPostgresModule, BUS_POSTGRES_SYMBOLS } from '@node-ts/bus-postgres'
+import { WorkflowsModule } from './workflows'
 import { LoggerConfiguration } from './utils/injectableLogger'
 import { sqsConfiguration } from './configs/aws'
 import { dbConfiguration } from './configs/db'
@@ -23,6 +24,7 @@ container.load(new BusModule())
 container.load(new BusSqsModule())
 container.load(new BusWorkflowModule())
 container.load(new BusPostgresModule())
+container.load(new WorkflowsModule())
 
 const config = {
   accessKeyId: env.AWS_ACCESS_KEY_ID,

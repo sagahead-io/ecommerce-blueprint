@@ -1,4 +1,4 @@
-import { Command, Event, Message, MessageAttributes } from '@node-ts/bus-messages'
+import { Message, MessageAttributes } from '@node-ts/bus-messages'
 import {
   toMessageAttributeMap,
   fromMessageAttributeMap,
@@ -7,62 +7,63 @@ import {
 import aws, { SQS, SNS, ConfigurationOptions } from 'aws-sdk'
 import { PubSubEngine } from 'graphql-subscriptions'
 import { PubSubAsyncIterator } from 'graphql-subscriptions/dist/pubsub-async-iterator'
-import { PubSubOptions, ExtendedPubSubOptions, ObjectType, MessageExecutionHandler, PubSubMessageBody } from './types'
+import {
+  PubSubOptions,
+  ExtendedPubSubOptions,
+  ObjectType,
+  PubSubMessageBody,
+  MessageExecutionHandler,
+  MessageAddress,
+  SetupPoliciesResult,
+  SubscriptionValidationResult,
+} from './types'
 import { ConfigurationServicePlaceholders } from 'aws-sdk/lib/config_service_placeholders'
 import Debug from 'debug'
+import { TopicArn } from 'aws-sdk/clients/directoryservice'
+import { QueueArn } from 'aws-sdk/clients/s3'
+import { QueueUrl } from 'aws-sdk/clients/iot'
+import { subscriptionARN } from 'aws-sdk/clients/sns'
 
 const debug = Debug('graphql-snssqs-subscriptions')
 
 const MILLISECONDS_IN_SECONDS = 1000
 
+export enum SNSSQSPubSubState {
+  Started = 2,
+  Starting = 1,
+  Stopped = 0,
+}
+
 export class SNSSQSPubSub implements PubSubEngine {
   public sqs!: SQS
   public sns!: SNS
+  private currentSubscriptionId = 0
+  private subscriptionMap: {
+    [subId: number]: { queueUrl: string; listener: MessageExecutionHandler }
+  } = {}
   private clientConfig: SQS.Types.ClientConfiguration
   private options: ExtendedPubSubOptions = {
-    withSNS: true,
-    serviceName: '',
-    stopped: false,
-    queueUrl: '',
-    dlQueueUrl: '',
-    dlQueueArn: '',
-    queueArn: '',
-    topicArn: '',
-    subscriptionArn: '',
-    availableTopicsList: [],
+    subscriptionArns: [],
+    topicsArnCache: [],
+    queuesUrlCache: [],
     batchSize: 1,
     processMessagesInBatch: false,
   }
 
-  public constructor(
-    config: ConfigurationOptions & ConfigurationServicePlaceholders = {},
-    pubSubOptions: PubSubOptions,
-  ) {
-    aws.config.update(config)
+  public constructor(config?: ConfigurationOptions & ConfigurationServicePlaceholders, pubSubOptions?: PubSubOptions) {
+    this.clientConfig = config || {}
+    const providedOpts = pubSubOptions || {}
 
-    this.clientConfig = config
-    this.options = this.addOptions(pubSubOptions)
+    aws.config.update(this.clientConfig)
+    this.options = this.addOptions(providedOpts)
     this.sqs = new aws.SQS()
-
-    if (this.options.withSNS) {
-      this.sns = new aws.SNS()
-    }
+    this.sns = new aws.SNS()
 
     debug('Pubsub Engine is configured with :', this.options)
     debug('Pubsub Engine client is configured with :', this.clientConfig)
   }
 
-  public init = async (): Promise<void> => {
-    try {
-      await this.createPubSub()
-      debug('Pubsub Engine is created with options:', this.options)
-    } catch (error) {
-      debug('Pubsub Engine failed to create ', this.options, error)
-      return undefined
-    }
-  }
-
-  public asyncIterator = <T>(triggers: string | string[]): AsyncIterator<T> => {
+  asyncIterator = <T>(triggers: string | string[]): AsyncIterator<T> => {
     return new PubSubAsyncIterator<T>(this, triggers)
   }
 
@@ -80,264 +81,351 @@ export class SNSSQSPubSub implements PubSubEngine {
     return { ...this.options, ...opts }
   }
 
-  private setupPolicies = (queueName: string) => {
-    if (!this.options.topicArn) {
-      return {}
-    }
-
-    const principalFromTopic = this.options.topicArn.split(':')[4]
-    const queueArn = `arn:aws:sqs:${this.clientConfig.region}:${principalFromTopic}:${queueName}`
-    const queueArnDLQ = `${queueArn}-DLQ`
-    const idFromTopic = `${queueArn}/SQSDefaultPolicy`
-    this.options.queueArn = queueArn
-    this.options.dlQueueArn = queueArnDLQ
-
-    return {
-      Version: '2012-10-17',
-      Id: `${idFromTopic}`,
-      Statement: [
-        {
-          Effect: 'Allow',
-          Principal: '*',
-          Action: 'SQS:*',
-          Resource: queueArn,
-        },
-      ],
+  // topic:queue e.g. service1-queue1, service1-queue2, service1-queue3-workflow1
+  private triggerNameIsValid = (triggerName: string) => {
+    try {
+      const split = triggerName.split('-')
+      return split.length === 2 || split.length === 3
+    } catch (e) {
+      debug(`${e}`)
+      return false
     }
   }
 
-  // generic pubsub engine publish method, still works with @node-ts/bus Event/Command
-  async publish<MessageType extends Message>(
+  private setupPolicies = (queueName: string, topicArn: TopicArn): SetupPoliciesResult => {
+    const principalFromTopic = topicArn.split(':')[4]
+    const queueArn = `arn:aws:sqs:${this.clientConfig.region}:${principalFromTopic}:${queueName}`
+    const queueArnDLQ = `${queueArn}DLQ`
+    const idFromTopic = `${queueArn}/SQSDefaultPolicy`
+    const sourceArn = `${topicArn.substring(0, topicArn.lastIndexOf(':'))}:*`
+
+    return {
+      formedQueueArn: queueArn,
+      formedDlqQueueArn: queueArnDLQ,
+      policy: {
+        Version: '2012-10-17',
+        Id: `${idFromTopic}`,
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: '*',
+            Action: 'SQS:*',
+            Resource: queueArn,
+            Condition: {
+              StringLike: {
+                'aws:SourceArn': sourceArn,
+              },
+            },
+          },
+        ],
+      },
+    }
+  }
+
+  public publish = async <MessageType extends Message>(
     triggerName: string,
     message: MessageType | ObjectType, // either sending @node-ts/bus interfaced message or just random payload
     messageAttributes?: MessageAttributes,
-  ): Promise<void> {
-    if (message instanceof Message) {
-      const resolvedMessageName = this.resolveTopicFromMessageName(message.$name)
-      if (resolvedMessageName !== triggerName) {
-        if (resolvedMessageName !== `${this.options.prefix}-${triggerName}`) {
-          throw new Error(`TriggerName should be found in message.$name in order to map the queue and receiver`)
-        }
-      }
-      await this.publishMessage(message, messageAttributes)
-    } else {
-      await this.publishMessage(message, messageAttributes, triggerName)
-    }
-  }
-
-  // same as publish but specific for @node-ts/bus Event
-  async sendEvent<EventType extends Event>(event: EventType, messageAttributes?: MessageAttributes): Promise<void> {
-    await this.publishMessage(event, messageAttributes)
-  }
-
-  // same as publish but specific for @node-ts/bus Command
-  async sendCommand<CommandType extends Command>(
-    command: CommandType,
-    messageAttributes?: MessageAttributes,
-  ): Promise<void> {
-    await this.publishMessage(command, messageAttributes)
-  }
-
-  private async publishMessage(
-    message: Message | ObjectType,
-    messageAttributes: MessageAttributes = new MessageAttributes(),
-    triggerName = '',
-  ): Promise<void> {
-    const topicName =
-      message instanceof Message && !triggerName ? this.resolveTopicFromMessageName(message.$name) : triggerName
-    const topicArn = this.resolveTopicArnFromMessageName(topicName)
-    debug('Publishing message to sns', { message, topicArn })
-
-    const attributeMap = toMessageAttributeMap(messageAttributes)
-    debug('Resolved message attributes', { attributeMap })
-
-    const snsMessage: SNS.PublishInput = {
-      TopicArn: topicArn,
-      Subject: message.$name,
-      Message: JSON.stringify(message),
-      MessageAttributes: attributeMap,
-    }
-    debug('Sending message to SNS', { snsMessage })
-    await this.sns.publish(snsMessage).promise()
-  }
-
-  public subscribe = (triggerName: string, onMessage: MessageExecutionHandler): Promise<number> => {
-    try {
-      this.pollMessage(triggerName, onMessage)
-
-      return Promise.resolve(1)
-    } catch (error) {
-      debug('Error happens before starting to poll', error)
-      return Promise.resolve(0)
-    }
-  }
-
-  public unsubscribe = async (): Promise<void> => {
-    if (!this.options.stopped) {
-      this.options.stopped = true
-    }
-  }
-
-  public readonly pollMessage = async (topic: string, onMessage: MessageExecutionHandler): Promise<void> => {
-    if (this.options.stopped) {
+  ): Promise<void> => {
+    if (!this.triggerNameIsValid(triggerName)) {
+      console.error(`triggerName should be "topic-queue" or "topic-queue-receiver" format`)
       return
     }
 
+    try {
+      const { topicArn } = await this.validateSubscription(triggerName, message)
+
+      const attributeMap = messageAttributes && toMessageAttributeMap(messageAttributes)
+      debug('Resolved message attributes', { attributeMap })
+
+      const snsMessage: SNS.PublishInput = {
+        TopicArn: topicArn,
+        Subject: triggerName,
+        Message: JSON.stringify(message),
+        MessageAttributes: attributeMap,
+      }
+      debug('Sending message to SNS', { snsMessage })
+      await this.sns.publish(snsMessage).promise()
+    } catch (e) {
+      debug('Something wrong happened', e)
+      console.error(e)
+    }
+  }
+
+  public validateSubscription = async <MessageType extends Message>(
+    triggerName: string,
+    message?: MessageType | ObjectType,
+  ): Promise<SubscriptionValidationResult> => {
+    try {
+      const messageIsBusType = message instanceof Message
+      const messageAddress: MessageAddress = this.resolveMessageAddress(
+        message && messageIsBusType ? message.$name : triggerName,
+      )
+
+      if (message && messageIsBusType) {
+        if (!triggerName.includes(messageAddress.fullAddress)) {
+          throw new Error(`TriggerName should be found in message.$name in order to map the queue and receiver`)
+        }
+      }
+
+      const topicArn = await this.createTopic(messageAddress.topicName)
+
+      if (!topicArn) {
+        throw new Error(`Topic not created either way can not proceed`)
+      }
+
+      const queueUrl = await this.createQueue(messageAddress.queueName, topicArn)
+
+      if (!queueUrl) {
+        throw new Error(`Queue not created either way can not proceed`)
+      }
+
+      await this.subscribeQueueToTopic(topicArn, queueUrl)
+
+      return {
+        topicArn,
+        queueUrl,
+      }
+    } catch (e) {
+      throw new Error(`Subscription validation failed ${e}`)
+    }
+  }
+
+  public subscribe = async (triggerName: string, onMessage: MessageExecutionHandler): Promise<number> => {
+    if (!this.triggerNameIsValid(triggerName)) {
+      return 0
+    }
+
+    let result: SubscriptionValidationResult
+
+    try {
+      result = await this.validateSubscription(triggerName)
+
+      if (!result) {
+        throw new Error(`Subscription invalid`)
+      }
+    } catch (e) {
+      return 0
+    }
+
+    const id = this.currentSubscriptionId++
+
+    this.subscriptionMap[id] = {
+      queueUrl: result.queueUrl,
+      listener: onMessage,
+    }
+
+    this.pollMessage(id)
+
+    return id
+  }
+
+  public unsubscribe = async (subId: number): Promise<void> => {
+    const sub = this.subscriptionMap[subId]
+
+    if (!sub) {
+      console.error(`no sub with this id ${subId}`)
+      return
+    }
+
+    delete this.subscriptionMap[subId]
+  }
+
+  public readonly pollMessage = async (id: number): Promise<void> => {
+    if (!this.subscriptionMap[id]) {
+      return
+    }
+
+    const retrievedQueueUrl = this.subscriptionMap[id].queueUrl
+    const onMessage = this.subscriptionMap[id].listener
     const params: SQS.ReceiveMessageRequest = {
-      QueueUrl: this.options.queueUrl,
+      QueueUrl: retrievedQueueUrl,
       WaitTimeSeconds: 10,
       MaxNumberOfMessages: this.options.batchSize,
       MessageAttributeNames: ['.*'],
       AttributeNames: ['ApproximateReceiveCount'],
     }
 
-    const result = await this.sqs.receiveMessage(params).promise()
+    try {
+      const { Messages } = await this.sqs.receiveMessage(params).promise()
 
-    if (!result.Messages || result.Messages.length === 0) {
-      return
-    }
+      if (!Messages || Messages.length === 0) {
+        throw new Error(`No Messages`)
+      }
 
-    // Only handle the expected number of messages, anything else just return and retry
-    if (result.Messages.length > this.options.batchSize) {
-      debug('Received more than the expected number of messages', {
-        expected: this.options.batchSize,
-        received: result.Messages.length,
+      // Only handle the expected number of messages, anything else just return and retry
+      if (Messages.length > this.options.batchSize) {
+        debug('Received more than the expected number of messages', {
+          expected: this.options.batchSize,
+          received: Messages.length,
+        })
+        await Promise.all(Messages.map((message) => this.makeMessageVisible(retrievedQueueUrl, message)))
+        throw new Error(`messages size is more than batchSize`)
+      }
+
+      debug('Received result and messages', {
+        resultMessages: Messages,
       })
-      await Promise.all(result.Messages.map(async (message) => this.makeMessageVisible(message)))
-      return
+
+      const messages = await Promise.all(Messages.map((messages) => this.processMessage(retrievedQueueUrl, messages)))
+
+      if (this.options.processMessagesInBatch) {
+        onMessage(messages)
+      } else {
+        messages.map((message) => onMessage([message]))
+      }
+    } catch (e1) {
+      Debug(e1)
     }
 
-    debug('Received result and messages', {
-      result,
-      resultMessages: result.Messages,
-    })
-
-    const messages = await Promise.all(result.Messages.map((messages) => this.processMessage(topic, messages)))
-
-    if (this.options.processMessagesInBatch) {
-      onMessage(messages)
-    } else {
-      messages.map((message) => onMessage([message]))
-    }
+    setImmediate(() => this.pollMessage(id))
   }
 
-  private processMessage = async (topic: string, sqsMessage: SQS.Message): Promise<PubSubMessageBody> => {
-    if (!sqsMessage.Body) {
+  private processMessage = async (queueUrl: QueueUrl, raw: SQS.Message): Promise<PubSubMessageBody> => {
+    if (!raw.Body) {
       const error = 'Message is not formatted with an SNS envelope and will be discarded'
       debug(error, {
-        sqsMessage,
+        raw,
       })
-      await this.deleteMessage(sqsMessage)
+      await this.deleteMessage(queueUrl, raw)
       throw new Error(error)
     }
 
-    const snsMessage = JSON.parse(sqsMessage.Body)
+    const domainMessage = JSON.parse(raw.Body)
 
     try {
-      // if message is sent for bus type listener check if the message name has the same topic
-      if (snsMessage instanceof Message) {
-        const msgName = this.resolveTopicFromMessageName(snsMessage.$name)
-
-        if (msgName !== topic) {
-          if (msgName !== `${this.options.prefix}-${topic}`) {
-            const error = 'Massage is @node-ts/bus based but message.$name does not have same topic'
-            debug(error)
-            throw new Error(error)
-          }
-        }
-      }
-
-      const mappedAttributes = this.mapAwsMessageAttributesToBusTypeAttributes(sqsMessage.MessageAttributes)
+      const mappedAttributes = this.mapAwsMessageAttributesToBusTypeAttributes(raw.MessageAttributes)
       const attributes = fromMessageAttributeMap(mappedAttributes)
 
       debug('Received message attributes', {
-        transportAttributes: sqsMessage.MessageAttributes,
+        transportAttributes: raw.MessageAttributes,
         messageAttributes: attributes,
       })
 
-      await this.deleteMessage(sqsMessage)
+      await this.deleteMessage(queueUrl, raw)
 
-      debug(`Valid message id ${sqsMessage.MessageId}`)
+      debug(`Valid message id ${raw.MessageId}`)
 
       return {
-        id: sqsMessage.MessageId || '', // not sure if message could not have id
-        raw: sqsMessage,
-        domainMessage: snsMessage,
+        id: raw.MessageId || '', // not sure if message could not have id
+        raw,
+        domainMessage,
         attributes, // attributes is converted to bus type
       }
     } catch (e) {
       debug("Message will be retried, though it's likely to end up in the dead letter queue", {
-        sqsMessage,
+        raw,
         e,
       })
-      await this.makeMessageVisible(sqsMessage)
+      await this.makeMessageVisible(queueUrl, raw)
       throw new Error(`Something went wrong while validating message ${e}`)
     }
   }
 
-  private createPubSub = async (): Promise<void> => {
-    // Create SNS Topic and SQS Queue
+  public warmup = async (): Promise<void> => {
     try {
-      if (this.options.withSNS) {
-        await this.createTopic()
-      }
-      await this.createQueue()
-    } catch (error) {
-      debug(`Unable to configure PubSub channel ${error}`)
+      await this.fetchTopicsToCache()
+      await this.fetchQueuesToCache()
+      await this.fetchSubscriptionsToCache()
+    } catch (e) {
+      console.error(`Unable to warmup pubsub`)
+      return
     }
+  }
 
-    if (!this.options.withSNS) {
+  private fetchSubscriptionsToCache = async (): Promise<void> => {
+    if (!this.options.topicsArnCache.length) {
+      console.error('no topics fetched and cached')
       return
     }
 
-    // Subscribe SNS Topic to SQS Queue
     try {
-      const { SubscriptionArn } = await this.sns
-        .subscribe({
-          TopicArn: this.options.topicArn,
-          Protocol: 'sqs',
-          Endpoint: this.options.queueArn,
-          Attributes: {
-            RawMessageDelivery: 'true',
-          },
-          ReturnSubscriptionArn: true,
-        })
-        .promise()
-      this.options.subscriptionArn = SubscriptionArn!
+      const subscriptions = await Promise.all(
+        this.options.topicsArnCache.map(async (topicArn) => {
+          try {
+            const { Subscriptions } = await this.sns.listSubscriptionsByTopic({ TopicArn: topicArn }).promise()
+            return Subscriptions || []
+          } catch (e) {
+            throw new Error(e)
+          }
+        }),
+      )
+
+      const flattened = subscriptions.flat()
+      const subArns = flattened.map((sub: SNS.Subscription) => sub.SubscriptionArn)
+
+      this.options.subscriptionArns = subArns.reduce<TopicArn[]>((a, c) => {
+        return c !== undefined ? [...a, c] : a
+      }, [])
     } catch (error) {
       debug(`Unable to subscribe with these options ${this.options}, error: ${error}`)
       return undefined
     }
+  }
 
-    // Persist available topics in the options
+  private fetchTopicsToCache = async (): Promise<void> => {
     try {
       const { Topics } = await this.sns.listTopics().promise()
-      this.options.availableTopicsList = Topics!
+      if (!Topics) {
+        this.options.topicsArnCache = []
+      } else {
+        const topicArns: (TopicArn | undefined)[] = Topics.map<TopicArn | undefined>((topic) => topic.TopicArn)
+        this.options.topicsArnCache = topicArns.reduce<TopicArn[]>((a, c) => {
+          return c !== undefined ? [...a, c] : a
+        }, [])
+      }
     } catch (error) {
-      debug(`Unable to fetch topics, might be problem when publishing messages ${this.options}, error ${error}`)
-      return undefined
+      console.error(`Unable to fetch topics, might be problem when publishing messages ${this.options}, error ${error}`)
     }
+
+    return
   }
 
-  private createTopic = async (): Promise<void> => {
-    const { serviceName, prefix } = this.options
-    const formedPrefix = prefix ? `${prefix}-` : ''
+  private fetchQueuesToCache = async (): Promise<void> => {
     try {
-      const { TopicArn } = await this.sns.createTopic({ Name: `${formedPrefix}${serviceName}` }).promise()
-      this.options.topicArn = TopicArn!
+      const { QueueUrls } = await this.sqs.listQueues().promise()
+      this.options.queuesUrlCache = QueueUrls || []
     } catch (error) {
-      debug(`Topic creation failed. ${error}`)
-      return undefined
+      console.error(`Unable to fetch queues, might be problem when publishing messages ${this.options}, error ${error}`)
+    }
+
+    return
+  }
+
+  private createTopic = async (name: string): Promise<string | undefined> => {
+    const resolvedTopicArn = this.resolveTopicArnFromCache(name)
+
+    if (resolvedTopicArn) {
+      return resolvedTopicArn
+    }
+
+    try {
+      const { TopicArn } = await this.sns.createTopic({ Name: `${name}` }).promise()
+
+      if (TopicArn) {
+        this.options.topicsArnCache = [...this.options.topicsArnCache, TopicArn]
+      }
+
+      return TopicArn
+    } catch (error) {
+      throw new Error(`Topic creation failed. ${error}`)
     }
   }
 
-  private createQueue = async (): Promise<void> => {
-    const queueName = this.formQueueName()
-    const queueNameDLQ = this.formQueueName('-DLQ')
+  private createQueue = async (name: string, topicArn: TopicArn): Promise<string | undefined> => {
+    const resolvedQueueUrl = this.resolveQueueUrlFromCache(name)
+
+    if (resolvedQueueUrl) {
+      return resolvedQueueUrl
+    }
+
+    const queueName = name
+    const queueNameDLQ = `${name}DLQ`
+    const policyConfig = this.setupPolicies(queueName, topicArn)
 
     const policy = {
-      Policy: JSON.stringify(this.setupPolicies(queueName)),
-      RedrivePolicy: `{"deadLetterTargetArn":"${this.options.dlQueueArn}","maxReceiveCount":"10"}`,
+      Policy: JSON.stringify(policyConfig.policy),
+      RedrivePolicy: `{"deadLetterTargetArn":"${policyConfig.formedDlqQueueArn}","maxReceiveCount":"10"}`,
     }
 
     const params = {
@@ -352,19 +440,51 @@ export class SNSSQSPubSub implements PubSubEngine {
     }
 
     try {
-      const dlqQueueResult = await this.sqs.createQueue(paramsDLQ).promise()
-      const queueResult = await this.sqs.createQueue(params).promise()
-      this.options.queueUrl = queueResult.QueueUrl!
-      this.options.dlQueueUrl = dlqQueueResult.QueueUrl!
+      await this.sqs.createQueue(paramsDLQ).promise()
+      const { QueueUrl } = await this.sqs.createQueue(params).promise()
+      if (QueueUrl) {
+        this.options.queuesUrlCache = [...this.options.queuesUrlCache, QueueUrl]
+      }
+      return QueueUrl
     } catch (error) {
-      debug(`Queue creation failed. ${error}`)
+      throw new Error(`Queue creation failed. ${error}`)
+    }
+  }
+
+  private subscribeQueueToTopic = async (topic: TopicArn, endpoint: QueueArn): Promise<void> => {
+    const exists = this.options.subscriptionArns.find(
+      (sub: subscriptionARN) => sub.substring(0, sub.lastIndexOf(':')) === topic,
+    )
+
+    if (exists) {
+      return
+    }
+
+    try {
+      const { SubscriptionArn } = await this.sns
+        .subscribe({
+          TopicArn: topic,
+          Protocol: 'sqs',
+          Endpoint: endpoint,
+          Attributes: {
+            RawMessageDelivery: 'true',
+          },
+          ReturnSubscriptionArn: true,
+        })
+        .promise()
+
+      if (SubscriptionArn) {
+        this.options.subscriptionArns = [...this.options.subscriptionArns, SubscriptionArn]
+      }
+    } catch (error) {
+      debug(`Unable to subscribe with these options ${this.options}, error: ${error}`)
       return undefined
     }
   }
 
-  private async makeMessageVisible(sqsMessage: SQS.Message): Promise<void> {
+  private makeMessageVisible = async (queueUrl: QueueUrl, sqsMessage: SQS.Message): Promise<void> => {
     const changeVisibilityRequest: SQS.ChangeMessageVisibilityRequest = {
-      QueueUrl: this.options.queueUrl,
+      QueueUrl: queueUrl,
       ReceiptHandle: sqsMessage.ReceiptHandle!,
       VisibilityTimeout: this.calculateVisibilityTimeout(sqsMessage),
     }
@@ -372,9 +492,9 @@ export class SNSSQSPubSub implements PubSubEngine {
     await this.sqs.changeMessageVisibility(changeVisibilityRequest).promise()
   }
 
-  private deleteMessage = async (sqsMessage: SQS.Message): Promise<void> => {
+  private deleteMessage = async (queueUrl: QueueUrl, sqsMessage: SQS.Message): Promise<void> => {
     const params = {
-      QueueUrl: this.options.queueUrl,
+      QueueUrl: queueUrl,
       ReceiptHandle: sqsMessage.ReceiptHandle!,
     }
 
@@ -386,47 +506,45 @@ export class SNSSQSPubSub implements PubSubEngine {
     }
   }
 
-  private formQueueName = (providedSuffix?: string): string => {
-    const { serviceName, prefix } = this.options
-    const queueRoot = serviceName
-    const formedPrefix = prefix ? `${prefix}-` : ''
+  private resolveQueueUrlFromCache = (name: string): string | undefined => {
+    if (this.options.queueUrlResolverFn) {
+      return this.options.queueUrlResolverFn(name)
+    }
 
-    return `${formedPrefix}${queueRoot}${providedSuffix || ''}`
+    const queueUrl = this.options.queuesUrlCache.find((queue: QueueUrl) => queue.includes(`/${name}`))
+
+    return queueUrl
   }
 
-  private resolveTopicArnFromMessageName = (msgTopic: string): string => {
-    // if provided topic arn resolve fn
+  private resolveTopicArnFromCache = (name: string): string | undefined => {
     if (this.options.topicArnResolverFn) {
-      return this.options.topicArnResolverFn(msgTopic)
+      return this.options.topicArnResolverFn(name)
     }
 
-    // topic is itself service
-    if (msgTopic === this.options.serviceName) {
-      return this.options.topicArn
-    }
-
-    // find topic by topic name in the topics list
-    const result: SNS.Types.Topic[] = this.options.availableTopicsList.filter((topic: SNS.Types.Topic) => {
-      const topicParts = topic.TopicArn!.split(':')
+    const topicArn = this.options.topicsArnCache.find((topic: TopicArn) => {
+      const topicParts = topic.split(':')
       const topicName = topicParts[5]
-      return topicName === msgTopic
+      return topicName === name
     })
 
-    // return found topic or return given argument
-    return result ? result[0].TopicArn! : msgTopic
+    return topicArn
   }
 
-  private resolveTopicFromMessageName = (messageName: string): string => {
-    const { prefix } = this.options
-    const resolvedTrigger = this.options.topicResolverFn
-      ? this.options.topicResolverFn(messageName)
-      : messageName.split('/')[1]
+  private resolveMessageAddress = (triggerName: string): MessageAddress => {
+    const resolvedAddressTopic = this.options.topicResolverFn
+      ? this.options.topicResolverFn(triggerName)
+      : triggerName.split('-')[0]
+    const resolvedAddressQueue = this.options.topicResolverFn
+      ? this.options.topicResolverFn(triggerName)
+      : triggerName.split('-')[1]
 
-    if (prefix) {
-      return `${prefix}-${resolvedTrigger}`
+    const fullAddress = `${resolvedAddressTopic}-${resolvedAddressQueue}`
+
+    return {
+      fullAddress,
+      topicName: resolvedAddressTopic,
+      queueName: resolvedAddressQueue,
     }
-
-    return resolvedTrigger
   }
 
   private calculateVisibilityTimeout = (sqsMessage: SQS.Message): number => {

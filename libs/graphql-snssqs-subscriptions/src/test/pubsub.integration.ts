@@ -1,9 +1,11 @@
 import { SNSSQSPubSub, Message, MessageAttributes, PubSubMessageBody } from '..'
 
-const triggerName = `integration-test-${Math.random().toString(36).substring(7)}`
+const topicName = `testt${Math.random().toString(36).substring(7)}`
+const queueName = `testq${Math.random().toString(36).substring(7)}`
+const triggerName = `${topicName}-${queueName}`
 
 class SimpleMessage extends Message {
-  $name = `mydomain/${triggerName}/some-msg-subject`
+  $name = `${topicName}-${queueName}-ResceiverOrResolverName`
 
   test: string
 
@@ -12,8 +14,6 @@ class SimpleMessage extends Message {
     this.test = test
   }
 }
-
-const msg = new SimpleMessage('test')
 
 const attributes = new MessageAttributes({
   attributes: {
@@ -27,23 +27,20 @@ const attributes = new MessageAttributes({
   },
 })
 
+const globalInstance = new SNSSQSPubSub({
+  region: 'us-east-2',
+  sns: {
+    endpoint: `http://localhost:4575`,
+  },
+  sqs: {
+    endpoint: `http://localhost:4576`,
+  },
+})
+
 describe('sns-sqs-pub-sub integration', () => {
   it('@node-ts/bus type messages should work', async (done) => {
-    const instance = new SNSSQSPubSub(
-      {
-        region: 'us-east-2',
-        sns: {
-          endpoint: `http://localhost:4575`,
-        },
-        sqs: {
-          endpoint: `http://localhost:4576`,
-        },
-      },
-      { serviceName: triggerName, prefix: 'myprefix' },
-    )
-    await instance.init()
-    await instance.publish(triggerName, msg, attributes)
-    await instance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
+    await globalInstance.publish(triggerName, new SimpleMessage('test'), attributes)
+    await globalInstance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
       expect(Array.isArray(data)).toBe(true)
 
       data.map((data) => {
@@ -52,7 +49,7 @@ describe('sns-sqs-pub-sub integration', () => {
         expect(data.attributes).toEqual(attributes)
       })
 
-      instance.unsubscribe()
+      globalInstance.unsubscribe(0)
       done()
     })
   })
@@ -68,10 +65,9 @@ describe('sns-sqs-pub-sub integration', () => {
           endpoint: `http://localhost:4576`,
         },
       },
-      { serviceName: triggerName, batchSize: 3, processMessagesInBatch: true },
+      { batchSize: 3, processMessagesInBatch: true },
     )
 
-    await instance.init()
     await instance.publish(triggerName, new SimpleMessage('test0'), attributes)
     await instance.publish(triggerName, new SimpleMessage('test1'), attributes)
     await instance.publish(triggerName, new SimpleMessage('test2'), attributes)
@@ -84,29 +80,25 @@ describe('sns-sqs-pub-sub integration', () => {
         expect(data.domainMessage).toEqual(new SimpleMessage(`test${idx}`))
       })
 
-      instance.unsubscribe()
+      instance.unsubscribe(0)
       done()
     })
   })
 
   it('graphql sns-sqs subscription should work', async (done) => {
-    const instance = new SNSSQSPubSub(
-      {
-        region: 'us-east-2',
-        sns: {
-          endpoint: `http://localhost:4575`,
-        },
-        sqs: {
-          endpoint: `http://localhost:4576`,
-        },
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
       },
-      { serviceName: triggerName },
-    )
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
 
     const payload = {
       justAPayload: 'test',
     }
-    await instance.init()
     await instance.publish(triggerName, payload, attributes)
     await instance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
       expect(Array.isArray(data)).toBe(true)
@@ -117,7 +109,7 @@ describe('sns-sqs-pub-sub integration', () => {
         expect(data.attributes).toEqual(attributes)
       })
 
-      instance.unsubscribe()
+      instance.unsubscribe(0)
       done()
     })
   })
@@ -133,7 +125,7 @@ describe('sns-sqs-pub-sub integration', () => {
           endpoint: `http://localhost:4576`,
         },
       },
-      { serviceName: triggerName, batchSize: 2, processMessagesInBatch: true },
+      { batchSize: 2, processMessagesInBatch: true },
     )
     const payloads = [
       { justAPayload: 'test2' },
@@ -141,7 +133,6 @@ describe('sns-sqs-pub-sub integration', () => {
         justAPayload: 'test1',
       },
     ]
-    await instance.init()
     await instance.publish(triggerName, payloads[0], attributes)
     await instance.publish(triggerName, payloads[1], attributes)
     await instance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
@@ -153,8 +144,148 @@ describe('sns-sqs-pub-sub integration', () => {
         expect(data.domainMessage).toEqual(payloads[idx])
       })
 
-      instance.unsubscribe()
+      instance.unsubscribe(0)
       done()
     })
+  })
+
+  it('dynamic queue should work', async (done) => {
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
+      },
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
+    const payload = { justAPayload: 'dynamic' }
+    const triggerName = `${topicName}-queue${Math.random().toString(36).substring(7)}`
+    await instance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
+      expect(Array.isArray(data)).toBe(true)
+      expect(data.length === 1).toBe(true)
+
+      data.map((data) => {
+        expect(data.raw.MessageId).toEqual(data.id)
+        expect(data.domainMessage).toEqual(payload)
+      })
+
+      instance.unsubscribe(0)
+      done()
+    })
+    instance.publish(triggerName, payload, attributes)
+  })
+
+  it('dynamic topic and queue should work', async (done) => {
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
+      },
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
+    const payload = { justAPayload: 'dynamic' }
+    const triggerName = `topic${Math.random().toString(36).substring(7)}-queue${Math.random()
+      .toString(36)
+      .substring(7)}`
+    await instance.subscribe(triggerName, (data: PubSubMessageBody[]) => {
+      expect(Array.isArray(data)).toBe(true)
+      expect(data.length === 1).toBe(true)
+
+      data.map((data) => {
+        expect(data.raw.MessageId).toEqual(data.id)
+        expect(data.domainMessage).toEqual(payload)
+      })
+
+      instance.unsubscribe(0)
+      done()
+    })
+    await instance.publish(triggerName, payload, attributes)
+  })
+
+  it('static queue subscribed to multiple topics should work', async (done) => {
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
+      },
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
+    const payload = { justAPayload: 'static' }
+    const triggerName1 = `staticTopic1-staticQueue1`
+    const triggerName2 = `staticTopic2-staticQueue1`
+
+    const cb = (data: PubSubMessageBody[]) => {
+      expect(Array.isArray(data)).toBe(true)
+      expect(data.length === 1).toBe(true)
+
+      data.map((data) => {
+        expect(data.raw.MessageId).toEqual(data.id)
+        expect(data.domainMessage).toEqual(payload)
+      })
+    }
+    await instance.subscribe(triggerName1, cb)
+    await instance.subscribe(triggerName2, cb)
+    await instance.publish(triggerName1, payload, attributes)
+    await instance.publish(triggerName2, payload, attributes)
+
+    instance.unsubscribe(0)
+    instance.unsubscribe(1)
+    done()
+  })
+
+  it('static topic with multiple queues subscriptions should work', async (done) => {
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
+      },
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
+    const payload = { justAPayload: 'static' }
+    const triggerName1 = `staticTopic1-staticQueue1`
+    const triggerName2 = `staticTopic1-staticQueue2`
+    const cb = (data: PubSubMessageBody[]) => {
+      expect(Array.isArray(data)).toBe(true)
+      expect(data.length === 1).toBe(true)
+
+      data.map((data) => {
+        expect(data.raw.MessageId).toEqual(data.id)
+        expect(data.domainMessage).toEqual(payload)
+      })
+
+      instance.unsubscribe(0)
+    }
+    await instance.subscribe(triggerName1, cb)
+    await instance.subscribe(triggerName2, cb)
+    await instance.publish(triggerName1, payload, attributes)
+    await instance.publish(triggerName2, payload, attributes)
+    done()
+  })
+
+  it('warmup should work', async () => {
+    const instance = new SNSSQSPubSub({
+      region: 'us-east-2',
+      sns: {
+        endpoint: `http://localhost:4575`,
+      },
+      sqs: {
+        endpoint: `http://localhost:4576`,
+      },
+    })
+    await instance.warmup()
+    const options = instance.getOptions()
+    console.log(options)
+    const subsIncludesAllTopics = options.subscriptionArns
+      .map((sub) => sub.split(':')[5])
+      .every((topic) => options.topicsArnCache.map((top) => top.split(':')[5]).includes(topic))
+
+    expect(subsIncludesAllTopics).toBe(true)
   })
 })

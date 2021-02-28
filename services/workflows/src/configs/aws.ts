@@ -24,7 +24,7 @@ export const sqsConfiguration: SqsTransportConfiguration = {
   deadLetterQueueUrl,
 
   resolveTopicName: (messageName: string) => {
-    const messageNameParts = messageName.split('/')
+    const messageNameParts = messageName.split('-')
     const serviceName = messageNameParts[0]
     return serviceName
   },

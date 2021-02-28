@@ -6,22 +6,24 @@
   "private": true,
   "dependencies": {
     "@graphql-tools/schema": "~7.1.2",
+    "@libs/events-commands": "workspace:libs/events-commands",
     "@libs/federated-server": "workspace:libs/federated-server",
     "@libs/integrate-auth0": "workspace:libs/integrate-auth0",
     "@libs/logger": "workspace:libs/logger",
     "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions",
     "class-validator": "^0.13.0",
     "dotenv": "^8.2.0",
-    "fastify": "~3.8.0",
+    "fastify": "^3.12.0",
     "graphql": "^15.4.0",
-    "mercurius": "~6.4.0",
+    "graphql-subscriptions": "^1.1.0",
+    "mercurius": "^7.1.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1"
   },
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "start": "tsc-watch --onSuccess \"node dist/index.js\"",
+    "start": "NODE_ENV=development && tsc-watch --onSuccess \"node dist/index.js\"",
     "start:prod": "node -r dist/index.js"
   },
   "devDependencies": {

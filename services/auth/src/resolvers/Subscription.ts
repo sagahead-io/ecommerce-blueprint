@@ -1,6 +1,8 @@
-import { Resolver, Query, Mutation, Arg, PubSub, Publisher, Subscription, Root, ResolverFilterData } from 'type-graphql'
-
+import { Resolver, Query, Mutation, Arg, Subscription, Root, PubSub } from 'type-graphql'
 import { Notification, NotificationPayload } from '../entities/Notification'
+import { PubSubAddress } from '@libs/events-commands'
+import { PubSubMessageBody, SNSSQSPubSub, withCancel } from '@sagahead/graphql-snssqs-subscriptions'
+import { pubsub } from '../connectors/pubsub'
 
 @Resolver()
 export class SubscriptionResolver {
@@ -13,57 +15,28 @@ export class SubscriptionResolver {
 
   @Mutation((_) => Boolean)
   async pubSubMutation(
-    @PubSub() pubSub: PubSubEngine,
+    @PubSub() pubsub: SNSSQSPubSub,
     @Arg('message', { nullable: true }) message?: string,
   ): Promise<boolean> {
     const payload: NotificationPayload = { id: ++this.autoIncrement, message }
-    await pubSub.publish('NOTIFICATIONS', payload)
+    await pubsub.publish(PubSubAddress.Auth, payload)
     return true
   }
 
-  @Mutation((_) => Boolean)
-  async publisherMutation(
-    @PubSub('NOTIFICATIONS') publish: Publisher<NotificationPayload>,
-    @Arg('message', { nullable: true }) message?: string,
-  ): Promise<boolean> {
-    await publish({ id: ++this.autoIncrement, message })
-    return true
-  }
-
-  @Subscription({ topics: 'NOTIFICATIONS' })
-  normalSubscription(@Root() { id, message }: NotificationPayload): Notification {
-    return { id, message, date: new Date() }
-  }
+  // @Subscription(() => Notification, { topics: PubSubAddress.Auth })
+  // normalSubscription(@Root() data: PubSubMessageBody[]): Notification {
+  //   const { domainMessage } = data[0]
+  //   return { id: domainMessage.id, message: domainMessage.message, date: new Date() }
+  // }
 
   @Subscription((_) => Notification, {
-    topics: 'NOTIFICATIONS',
-    filter: ({ payload }: ResolverFilterData<NotificationPayload>) => payload.id % 2 === 0,
+    subscribe: () =>
+      withCancel(pubsub.asyncIterator(PubSubAddress.Auth), () => {
+        console.log('With withCancel subscriptionWithFilter')
+      }),
   })
-  subscriptionWithFilter(@Root() { id, message }: NotificationPayload) {
-    const newNotification: Notification = { id, message, date: new Date() }
+  subscriptionWithFilter(@Root() data: PubSubMessageBody[]) {
+    const newNotification: Notification = { id: 1, message: data[0].domainMessage.message, date: new Date() }
     return newNotification
-  }
-
-  // dynamic topic
-
-  @Mutation((_) => Boolean)
-  async pubSubMutationToDynamicTopic(
-    @PubSub() pubSub: PubSubEngine,
-    @Arg('topic') topic: string,
-    @Arg('message', { nullable: true }) message?: string,
-  ): Promise<boolean> {
-    const payload: NotificationPayload = { id: ++this.autoIncrement, message }
-    await pubSub.publish(topic, payload)
-    return true
-  }
-
-  @Subscription({
-    topics: ({ args }) => args.topic,
-  })
-  subscriptionWithFilterToDynamicTopic(
-    // @Arg('topic') topic: string,
-    @Root() { id, message }: NotificationPayload,
-  ): Notification {
-    return { id, message, date: new Date() }
   }
 }

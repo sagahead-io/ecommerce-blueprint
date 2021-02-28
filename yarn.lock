@@ -1873,6 +1873,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/forwarded@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@fastify/forwarded@npm:1.0.0"
+  checksum: ce8131fe51bed9315c2df8ff0d143a216ef603f88b0590e73e0e7abc6ad1eb78f6cab593b73ac9be0ca8e8921ec5c405161987a964011501451ca7e1b892839d
+  languageName: node
+  linkType: hard
+
+"@fastify/proxy-addr@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@fastify/proxy-addr@npm:3.0.0"
+  dependencies:
+    "@fastify/forwarded": ^1.0.0
+    ipaddr.js: ^2.0.0
+  checksum: 9bad0be0ecd00b1d05b04620346d38442f092839ca038477cb31bc4937304c1e1593a0e0a8478208563c3b99f99b61d43879102904b97d8aa14132048642b552
+  languageName: node
+  linkType: hard
+
 "@frontends/admin@workspace:frontends/admin":
   version: 0.0.0-use.local
   resolution: "@frontends/admin@workspace:frontends/admin"
@@ -2302,6 +2319,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@libs/events-commands@workspace:libs/events-commands":
+  version: 0.0.0-use.local
+  resolution: "@libs/events-commands@workspace:libs/events-commands"
+  dependencies:
+    "@node-ts/bus-messages": ^0.3.0
+    "@types/jest": ^26.0.16
+    "@types/node": 14.14.10
+    jest: ^26.6.3
+    ts-jest: ^26.4.4
+    tslib: ^2.1.0
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@libs/federated-server@workspace:libs/federated-server":
   version: 0.0.0-use.local
   resolution: "@libs/federated-server@workspace:libs/federated-server"
@@ -2310,10 +2341,10 @@ __metadata:
     "@types/jest": ^26.0.16
     "@types/node": 14.14.10
     class-validator: ^0.13.0
-    fastify: ^3.9.2
+    fastify: ^3.12.0
     graphql: ^15.4.0
     jest: ^26.6.3
-    mercurius: ^6.9.1
+    mercurius: "https://github.com/mercurius-js/mercurius.git"
     reflect-metadata: ^0.1.13
     ts-jest: ^26.4.4
     tslib: ^2.0.3
@@ -2614,15 +2645,16 @@ __metadata:
     "@graphql-tools/delegate": ^7.0.8
     "@graphql-tools/wrap": ^7.0.5
     "@libs/logger": "workspace:*"
+    "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions"
     "@types/jest": ^26.0.16
     "@types/tsc-watch": ^4
     dotenv: ^8.2.0
-    fastify: ~3.8.0
-    fastify-cors: ^5.1.0
+    fastify: ^3.12.0
+    fastify-cors: ^5.2.0
     graphql: ^15.4.0
     isomorphic-fetch: ^3.0.0
     jest: ^26.6.3
-    mercurius: ~6.4.0
+    mercurius: ^7.1.0
     ts-jest: ^26.4.4
     tsc-watch: ^4.2.9
     tslib: ^2.0.3
@@ -2635,6 +2667,7 @@ __metadata:
   resolution: "@services/auth@workspace:services/auth"
   dependencies:
     "@graphql-tools/schema": ~7.1.2
+    "@libs/events-commands": "workspace:libs/events-commands"
     "@libs/federated-server": "workspace:libs/federated-server"
     "@libs/integrate-auth0": "workspace:libs/integrate-auth0"
     "@libs/logger": "workspace:libs/logger"
@@ -2643,10 +2676,11 @@ __metadata:
     "@types/tsc-watch": ^4
     class-validator: ^0.13.0
     dotenv: ^8.2.0
-    fastify: ~3.8.0
+    fastify: ^3.12.0
     graphql: ^15.4.0
+    graphql-subscriptions: ^1.1.0
     jest: ^26.6.3
-    mercurius: ~6.4.0
+    mercurius: ^7.1.0
     reflect-metadata: ^0.1.13
     ts-jest: ^26.4.4
     tsc-watch: ^4.2.9
@@ -2660,6 +2694,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@services/workflows@workspace:services/workflows"
   dependencies:
+    "@libs/events-commands": "workspace:libs/events-commands"
     "@libs/logger": "workspace:*"
     "@node-ts/bus-core": ^0.6.3
     "@node-ts/bus-messages": ^0.3.0
@@ -2669,6 +2704,7 @@ __metadata:
     "@node-ts/code-standards": ^0.0.10
     "@node-ts/logger-core": ^0.1.1
     "@node-ts/logger-winston": ^0.1.1
+    "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions"
     "@types/jest": ^26.0.16
     "@types/tsc-watch": ^4
     aws-sdk: ^2.827.0
@@ -3167,6 +3203,15 @@ __metadata:
   version: 4.0.0
   resolution: "@types/http-cache-semantics@npm:4.0.0"
   checksum: e16fae56d4daea4ed678b4d5918b693b44ca12fb5e479b87d242d3a35bf3a014974dcf9ed7aba7e29149fdb6c3719f9987fca51b20ef10aa84b58f86553c2f74
+  languageName: node
+  linkType: hard
+
+"@types/isomorphic-form-data@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@types/isomorphic-form-data@npm:2.0.0"
+  dependencies:
+    form-data: ^2.5.1
+  checksum: ca7fc75cef556a639484fee8c25ba676f4b0e4b120085a8f17a2e480136f4c856e807008d98bb57b7ceb191f98fc3c8026b0e947a2d418e8217643e0e3300fe7
   languageName: node
   linkType: hard
 
@@ -8500,13 +8545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify-cors@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "fastify-cors@npm:5.1.0"
+"fastify-cors@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "fastify-cors@npm:5.2.0"
   dependencies:
     fastify-plugin: ^3.0.0
     vary: ^1.1.2
-  checksum: f991f02fae7af6910aedacb471c4a249d5fc4bfe3e6f8c93d245e55a6006eeb0dfdac681d54ac50f062ec1f50bd8ba068f9ea96b19417ab602b369834917e58e
+  checksum: 9681a45c0358a2e36a091224cfd07cf4647856243af6d2cb75eb6479213d1b2693ddb33db6c58ecd37445150947099481ca29feca0fded94ee1918096d13a814
   languageName: node
   linkType: hard
 
@@ -8514,6 +8559,13 @@ __metadata:
   version: 0.2.0
   resolution: "fastify-error@npm:0.2.0"
   checksum: b7541e6f1e26a4db5ab7d565969c59f5f8d398555ed393b23a6395370c2594e42b118a9d916626309e23e41ea5bc1e96b30bdc86e5f7b52b2e68f246d2a4cbc3
+  languageName: node
+  linkType: hard
+
+"fastify-error@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "fastify-error@npm:0.3.0"
+  checksum: 8b66bd0f3ed68d90b31e59dfee38e41fa4ab1d5206fc5675c8ec5d0ef65e37067d5305ff3a2e754b129212353b30bd5e78958c1446e909153116ffac86a2539e
   languageName: node
   linkType: hard
 
@@ -8533,15 +8585,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify-static@npm:^3.0.0":
-  version: 3.3.0
-  resolution: "fastify-static@npm:3.3.0"
+"fastify-static@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "fastify-static@npm:3.4.0"
   dependencies:
     fastify-plugin: ^3.0.0
     glob: ^7.1.4
     readable-stream: ^3.4.0
     send: ^0.17.1
-  checksum: 9fda6898844470f58bd19eb6d134da5ed1558a49382b2a948595e0ea2895e9bf74a0bae4d0a23bbbde141acfa64e071910f88ca10c88cbcf20c76d84f8663ab4
+  checksum: 8a0798c06e67b13a5e6aa70cb15388da498270ac1ca9d3ca6be5feffe9888b7b24386468be482fe770757f60759bd2f09571811b8818db4f6b67bf6a748e9402
   languageName: node
   linkType: hard
 
@@ -8552,62 +8604,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify-websocket@npm:^2.0.5":
-  version: 2.0.11
-  resolution: "fastify-websocket@npm:2.0.11"
+"fastify-websocket@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "fastify-websocket@npm:3.0.0"
   dependencies:
     fastify-plugin: ^3.0.0
-    find-my-way: ^3.0.4
-    ws: ^7.3.1
-  checksum: 7a1b23a3e414aac68bf6343dc4a81395968985a45af52a2a72a91729e6f86322563f27038f62ec6e1042c6ff2667281af2972aa8457505f2dc0bb72e7868183b
+    ws: ^7.4.2
+  checksum: 002506929799cd9e3c46bc5499befedb4ef7d4ebf5317a850e3efc3492257046b63f5f7404e5e1fefc7c4348388ad3179a57b89aa83e6a2509ec9ecb3acde440
   languageName: node
   linkType: hard
 
-"fastify@npm:^3.9.2":
-  version: 3.9.2
-  resolution: "fastify@npm:3.9.2"
+"fastify@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "fastify@npm:3.12.0"
   dependencies:
+    "@fastify/proxy-addr": ^3.0.0
     abstract-logging: ^2.0.0
     ajv: ^6.12.2
     avvio: ^7.1.2
     fast-json-stringify: ^2.2.1
-    fastify-error: ^0.2.0
+    fastify-error: ^0.3.0
     fastify-warning: ^0.2.0
     find-my-way: ^3.0.5
     flatstr: ^1.0.12
     light-my-request: ^4.2.0
     pino: ^6.2.1
-    proxy-addr: ^2.0.5
     readable-stream: ^3.4.0
     rfdc: ^1.1.4
     secure-json-parse: ^2.0.0
     semver: ^7.3.2
     tiny-lru: ^7.0.0
-  checksum: 9ff64d7e71079811e101f4e46b51a4d7d6b0130ada0778c4a539ba0bc4fa7d854e98d99ef965c34b47ca1e3751c49961b0a8e8d08fae73e99a4d821f1d40d045
-  languageName: node
-  linkType: hard
-
-"fastify@npm:~3.8.0":
-  version: 3.8.0
-  resolution: "fastify@npm:3.8.0"
-  dependencies:
-    abstract-logging: ^2.0.0
-    ajv: ^6.12.2
-    avvio: ^7.1.2
-    fast-json-stringify: ^2.2.1
-    fastify-error: ^0.2.0
-    fastify-warning: ^0.2.0
-    find-my-way: ^3.0.5
-    flatstr: ^1.0.12
-    light-my-request: ^4.2.0
-    pino: ^6.2.1
-    proxy-addr: ^2.0.5
-    readable-stream: ^3.4.0
-    rfdc: ^1.1.4
-    secure-json-parse: ^2.0.0
-    semver: ^7.3.2
-    tiny-lru: ^7.0.0
-  checksum: 03e8cce89c6c2eaca615f1ad9c2389b31dd328a6a00304e68fdb481a893dcf21332597af5966efd8d8122a196acd915c93de0936ffbfd2309b3fe9266ce9b5b6
+  checksum: c23a285472b19ea8f72814430a1273ac82b50787109f397612a775dda377bb03d864d047cec5d34bb546397353b770731b2803a23fe75c6c10970ed27df29264
   languageName: node
   linkType: hard
 
@@ -8789,7 +8816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-my-way@npm:^3.0.4, find-my-way@npm:^3.0.5":
+"find-my-way@npm:^3.0.5":
   version: 3.0.5
   resolution: "find-my-way@npm:3.0.5"
   dependencies:
@@ -8939,6 +8966,17 @@ __metadata:
     tapable: ^1.0.0
     worker-rpc: ^0.1.0
   checksum: 72d87aed42fce0424cc2dc4ae4279297ab5dc0aaceff970ecad699cd85157936657374399b2b288e6a06512c3471e438ad3075c154cb13774e6c3db0e286d742
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "form-data@npm:2.5.1"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.6
+    mime-types: ^2.1.12
+  checksum: c46ee9a14a8678b6e0dfafabc96e25237d9f11ced9c51cd371a2b3448f6a3f2fa684b3bbbb35911bae8f5448b3f3c48c73f7f2be791a4ae5aee0eb0ab3cdfec2
   languageName: node
   linkType: hard
 
@@ -9408,9 +9446,9 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"graphql-jit@npm:^0.4.0":
-  version: 0.4.3
-  resolution: "graphql-jit@npm:0.4.3"
+"graphql-jit@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "graphql-jit@npm:0.5.0"
   dependencies:
     fast-json-stringify: ^1.13.0
     generate-function: ^2.3.1
@@ -9420,7 +9458,7 @@ fsevents@^2.1.2:
     lodash.mergewith: 4.6.2
   peerDependencies:
     graphql: ">=14"
-  checksum: c91aa31b7178813e45e0e46d71e75457cd9d7aa3d924d4399eef28ce36dc709961a3e1cf5504ecbb1b45c0e44edcab4a9f919e09519d51d0bc5dfecb8d566514
+  checksum: 468104cd4766b68db5e1e7da266b0212746d6ede38f7b6fb7e0a7402d373270115ba98fd0cc392ba459a72d2013b4058ccf781fcf2acc2016599b7f534457d5d
   languageName: node
   linkType: hard
 
@@ -9446,7 +9484,7 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.0.0, graphql@npm:^15.4.0":
+"graphql@npm:^15.4.0":
   version: 15.4.0
   resolution: "graphql@npm:15.4.0"
   checksum: 1a307dcfe2646e1e8323d03e8cd24554ba9f7369863bf0b020f2e4b39bff3504dc7d6dcad19cb96899f0825eda4c688819911f0c270e84f1bb0954fe3ac16a31
@@ -9789,19 +9827,6 @@ fsevents@^2.1.2:
     statuses: ">= 1.5.0 < 2"
     toidentifier: 1.0.0
   checksum: 563ae4a3f19c89029212922bade6ffcd0e4b7fa52e539f08c8f6941de7eaccb00bf76cb7692662192f2f0d567d4ac1f9d6a3d0ee70b166c8540cf791497f90ea
-  languageName: node
-  linkType: hard
-
-"http-errors@npm:^1.7.3":
-  version: 1.8.0
-  resolution: "http-errors@npm:1.8.0"
-  dependencies:
-    depd: ~1.1.2
-    inherits: 2.0.4
-    setprototypeof: 1.2.0
-    statuses: ">= 1.5.0 < 2"
-    toidentifier: 1.0.0
-  checksum: 95ad78508b2929923dac83edd7ce513db87c4214df83a6664559810566da73d9a6892ffdcd76738d9ab9d33172b4c7e304436a4031d471569a7344396fea0ecb
   languageName: node
   linkType: hard
 
@@ -10156,6 +10181,13 @@ fsevents@^2.1.2:
   version: 1.9.1
   resolution: "ipaddr.js@npm:1.9.1"
   checksum: de15bc7e63973d960abc43c9fbbf19589c726774f59d157d1b29382a1e86ae87c68cbd8b5c78a1712a87fc4fcd91e10762c7671950c66a1a19040ff4fd2f9c9b
+  languageName: node
+  linkType: hard
+
+"ipaddr.js@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "ipaddr.js@npm:2.0.0"
+  checksum: c14a0aaac9b3383be5226ea8b0b7707d9d6b021d5a8b04c6cdd9f6cea29583089d93718e10a8352460ed63becd834c7b93b62dbd46d2db4595086c9dc880630b
   languageName: node
   linkType: hard
 
@@ -12351,49 +12383,55 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"mercurius@npm:^6.9.1":
-  version: 6.9.1
-  resolution: "mercurius@npm:6.9.1"
+"mercurius@https://github.com/mercurius-js/mercurius.git":
+  version: 7.0.0
+  resolution: "mercurius@https://github.com/mercurius-js/mercurius.git#commit=4feeb9ec9df05e4c05578bb47fd4674df49cae63"
   dependencies:
+    "@types/isomorphic-form-data": ^2.0.0
     end-of-stream: ^1.4.4
     events.on: ^1.0.1
     fastify-error: ^0.2.0
     fastify-plugin: ^2.0.1
-    fastify-static: ^3.0.0
-    fastify-websocket: ^2.0.5
+    fastify-static: ^3.4.0
+    fastify-websocket: ^3.0.0
     graphql: ^15.4.0
-    graphql-jit: ^0.4.0
+    graphql-jit: ^0.5.0
     mqemitter: ^4.0.0
     p-map: ^4.0.0
     promise.allsettled: ^1.0.2
     readable-stream: ^3.5.0
+    secure-json-parse: ^2.2.0
     single-user-cache: ^0.3.0
     tiny-lru: ^7.0.2
-    ws: ^7.2.1
-  checksum: dae31723b87d5f45dbebc6cc50f84a8e04c0c42290c54e0110d84c54662920b906c9773b50e56fa0865b07f1e3a5be147c471990bf46db6ad6a0f1acfc5d11b5
+    undici: ^3.0.0
+    ws: ^7.4.2
+  checksum: 5b0ed1ac546897a32c20170dd5889d248e82aeac91748f2df6ba0580f4ce776e03332a34701df45531b7431300d58d1b69bafe5c6c81a61999f1d72e993023f3
   languageName: node
   linkType: hard
 
-"mercurius@npm:~6.4.0":
-  version: 6.4.0
-  resolution: "mercurius@npm:6.4.0"
+"mercurius@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "mercurius@npm:7.1.0"
   dependencies:
+    "@types/isomorphic-form-data": ^2.0.0
     end-of-stream: ^1.4.4
     events.on: ^1.0.1
+    fastify-error: ^0.2.0
     fastify-plugin: ^2.0.1
-    fastify-static: ^3.0.0
-    fastify-websocket: ^2.0.5
-    graphql: ^15.0.0
-    graphql-jit: ^0.4.0
-    http-errors: ^1.7.3
+    fastify-static: ^3.4.0
+    fastify-websocket: ^3.0.0
+    graphql: ^15.4.0
+    graphql-jit: ^0.5.0
     mqemitter: ^4.0.0
     p-map: ^4.0.0
     promise.allsettled: ^1.0.2
     readable-stream: ^3.5.0
-    single-user-cache: ^0.3.0
+    secure-json-parse: ^2.2.0
+    single-user-cache: ^0.4.0
     tiny-lru: ^7.0.2
-    ws: ^7.2.1
-  checksum: 10006f80e6483b6d70fa61a40ca1aaa1e63195c89056a68aff8e77247825289cb4d7a6a570b6cd3a248c95a88cb4d68bb76a7fd191a26273baed559502974764
+    undici: ^3.0.0
+    ws: ^7.4.2
+  checksum: ddb18175dca7d30602924d7569ece573207fed6f0ee45a71bd80a746d13b234ae1e925327f3083c25df0d13a6df420a960f816c66437bdd3215bf527f635cbe1
   languageName: node
   linkType: hard
 
@@ -15135,7 +15173,7 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"proxy-addr@npm:^2.0.5, proxy-addr@npm:~2.0.5":
+"proxy-addr@npm:~2.0.5":
   version: 2.0.6
   resolution: "proxy-addr@npm:2.0.6"
   dependencies:
@@ -16497,6 +16535,13 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
+"secure-json-parse@npm:^2.2.0":
+  version: 2.3.0
+  resolution: "secure-json-parse@npm:2.3.0"
+  checksum: 412ba056130341e40983b78df6da36a87c93b9600bc919c486f3ca7c3876164c8eda2c2a34bec9106dfa868ee586b5bc6778127b65bcf51a890675c0ca0329e1
+  languageName: node
+  linkType: hard
+
 "select-hose@npm:^2.0.0":
   version: 2.0.0
   resolution: "select-hose@npm:2.0.0"
@@ -16705,13 +16750,6 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"setprototypeof@npm:1.2.0":
-  version: 1.2.0
-  resolution: "setprototypeof@npm:1.2.0"
-  checksum: 72691439857719aa33ec11ebc97960347f0f96e75c2fe65d0f2ca5c9c44fb1aa026e2ae528959624ed3ae3820fe06bfb1aded306402c5c941afd3dfdf47f79d0
-  languageName: node
-  linkType: hard
-
 "sha.js@npm:^2.4.0, sha.js@npm:^2.4.11, sha.js@npm:^2.4.8":
   version: 2.4.11
   resolution: "sha.js@npm:2.4.11"
@@ -16820,6 +16858,15 @@ resolve@1.18.1:
   dependencies:
     safe-stable-stringify: ^1.1.0
   checksum: 261fb038f6426e064a1768158338b02924e8da512f238735f96b1ca6ca645ffe5bd73367925d1d32213bd39f9bc32693a56bd7226f3082524477427a1cf52047
+  languageName: node
+  linkType: hard
+
+"single-user-cache@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "single-user-cache@npm:0.4.0"
+  dependencies:
+    safe-stable-stringify: ^1.1.0
+  checksum: 7f9ca6ce4aac149e3f9b9fd9154dc34c8d1a4eebbadf296c791299f3c434cbdc1cff8fa365d235ffe331fc74066cfd7400138afffcb5b4684bb8c87c4cb81200
   languageName: node
   linkType: hard
 
@@ -18422,6 +18469,13 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
+"undici@npm:^3.0.0":
+  version: 3.3.3
+  resolution: "undici@npm:3.3.3"
+  checksum: f22939c00dffafed4e0e71ee41125ac07d3bc995ae24b7e4b41b3e60ebbc7ff237ee0c01e3c83a68d570957cd4166330eb396f8e734a6b778dbfabba4032a586
+  languageName: node
+  linkType: hard
+
 "unicode-canonical-property-names-ecmascript@npm:^1.0.4":
   version: 1.0.4
   resolution: "unicode-canonical-property-names-ecmascript@npm:1.0.4"
@@ -19427,7 +19481,7 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.2.1, ws@npm:^7.2.3, ws@npm:^7.3.1":
+"ws@npm:^7.2.3":
   version: 7.4.0
   resolution: "ws@npm:7.4.0"
   peerDependencies:
@@ -19439,6 +19493,21 @@ typescript@^4.1.2:
     utf-8-validate:
       optional: true
   checksum: 67c0f3b86d89c20e337b0bd712e0a2752068eadc0cf13c024d0532c18d073381ced485fb114a636998327a82c34d83720f4ceb7632395c0cb9580ce221177fd8
+  languageName: node
+  linkType: hard
+
+"ws@npm:^7.4.2":
+  version: 7.4.3
+  resolution: "ws@npm:7.4.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 493655b7c4589d09ff3c2b6e8870b9ad7f7aea0aff34034e2dbb9a2e13f6868a47b06b423bc2365aec6143500b04ad24fdaecfbd9a6752f8eab2d339182c9884
   languageName: node
   linkType: hard
 

@@ -41,6 +41,7 @@ module.exports = {
   "ignorePatterns": [
     ".yarn/*",
     "**/node_modules/**",
-    ".pnp.js"
+    ".pnp.js",
+    "**/dist/*.js"
   ]
 };

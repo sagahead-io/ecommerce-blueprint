@@ -1,7 +1,7 @@
 {
-  "name": "@libs/federated-server",
+  "name": "@libs/events-commands",
   "version": "0.0.0",
-  "description": "sagahead-ecommerce-blueprint shared node libs federated server",
+  "description": "sagahead-ecommerce-blueprint shared events and commands",
   "main": "dist/index.js",
   "private": true,
   "license": "MIT",
@@ -13,7 +13,8 @@
     "sagahead",
     "ecommerce",
     "shared",
-    "libs"
+    "libs",
+    "events"
   ],
   "author": "Valdas Mazrimas <valdas.mazrimas@gmail.com>",
   "devDependencies": {
@@ -24,13 +25,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@libs/build-federated-schema": "workspace:libs/build-federated-schema",
-    "class-validator": "^0.13.0",
-    "fastify": "^3.12.0",
-    "graphql": "^15.4.0",
-    "mercurius": "https://github.com/mercurius-js/mercurius.git",
-    "reflect-metadata": "^0.1.13",
-    "tslib": "^2.0.3",
-    "type-graphql": "^1.1.1"
+    "@node-ts/bus-messages": "^0.3.0",
+    "tslib": "^2.1.0"
   }
 }

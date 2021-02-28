@@ -1,15 +1,18 @@
 import { Workflow, StartedBy } from '@node-ts/bus-workflow'
 import { injectable, inject } from 'inversify'
 import { ExampleWorkflowData } from './Data'
-import { ExampleEvent } from './Events'
 import { LOGGER_SYMBOLS, Logger } from '@node-ts/logger-core'
-// import { BUS_SYMBOLS, Bus } from '@node-ts/bus-core'
+import { BUS_SYMBOLS, Bus } from '@node-ts/bus-core'
 import { MessageAttributes } from '@node-ts/bus-messages'
+import { WorkflowsExampleEvent, AuthSubscriptionExampleEvent } from '@libs/events-commands'
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 @injectable()
 export class ExampleWorkflow extends Workflow<ExampleWorkflowData> {
   constructor(
-    // @inject(BUS_SYMBOLS.Bus) private readonly bus: Bus,
+    @inject(BUS_SYMBOLS.Bus) private readonly bus: Bus,
     @inject(LOGGER_SYMBOLS.Logger) private readonly logger: Logger,
   ) {
     super()
@@ -18,20 +21,23 @@ export class ExampleWorkflow extends Workflow<ExampleWorkflowData> {
   /**
    * Starts new Example workflow
    */
-  @StartedBy<ExampleEvent, ExampleWorkflowData, 'handleExampleWorkflow'>(ExampleEvent)
+  @StartedBy<WorkflowsExampleEvent, ExampleWorkflowData, 'handleExampleWorkflow'>(WorkflowsExampleEvent)
   async handleExampleWorkflow(
-    event: ExampleEvent,
+    event: WorkflowsExampleEvent,
     _: ExampleWorkflowData,
-    messageAttributes: MessageAttributes,
+    { correlationId }: MessageAttributes,
   ): Promise<Partial<ExampleWorkflowData>> {
     this.logger.info('Example worklfow started')
 
-    const { correlationId } = event
+    const { message } = event
 
-    console.log(correlationId)
+    const reply = `Message that was received test from WorkflowsExampleEvent was ${message}`
+    await sleep(10000)
+    this.bus.publish(new AuthSubscriptionExampleEvent(reply))
 
     return {
-      correlationId: messageAttributes.correlationId,
+      message: reply,
+      correlationId,
     }
   }
 }
