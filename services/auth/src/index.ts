@@ -24,7 +24,7 @@ const start = async () => {
     //   web_origins: ['http://localhost:3000'],
     //   allowed_origins: ['http://localhost:3000'],
     // })
-    // await installAuth0Roles(['valdas.mazrimas@gmail.com'])
+    // await installAuth0Roles(['name surname @gmail.com'])
     const pubSub = await initPubSub()
     const result = await bootstrapFederatedServer({
       schemaOpts: {
