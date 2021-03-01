@@ -1,8 +1,24 @@
-import { Resolver, Query, Mutation, Arg, Subscription, Root, PubSub } from 'type-graphql'
+import { Resolver, Query, Mutation, Arg, Subscription, Root } from 'type-graphql'
 import { Notification, NotificationPayload } from '../entities/Notification'
 import { PubSubAddress } from '@libs/events-commands'
-import { PubSubMessageBody, SNSSQSPubSub, withCancel } from '@sagahead/graphql-snssqs-subscriptions'
 import { pubsub } from '../connectors/pubsub'
+
+export function withCancel<T>(
+  asyncIterator: AsyncIterator<T | undefined>,
+  onCancel: () => void,
+): AsyncIterator<T | undefined> {
+  if (!asyncIterator.return) {
+    asyncIterator.return = () => Promise.resolve({ value: undefined, done: true })
+  }
+
+  const savedReturn = asyncIterator.return.bind(asyncIterator)
+  asyncIterator.return = () => {
+    onCancel()
+    return savedReturn()
+  }
+
+  return asyncIterator
+}
 
 @Resolver()
 export class SubscriptionResolver {
@@ -14,10 +30,7 @@ export class SubscriptionResolver {
   }
 
   @Mutation((_) => Boolean)
-  async pubSubMutation(
-    @PubSub() pubsub: SNSSQSPubSub,
-    @Arg('message', { nullable: true }) message?: string,
-  ): Promise<boolean> {
+  async pubSubMutation(@Arg('message', { nullable: true }) message?: string): Promise<boolean> {
     const payload: NotificationPayload = { id: ++this.autoIncrement, message }
     await pubsub.publish(PubSubAddress.Auth, payload)
     return true
@@ -35,8 +48,9 @@ export class SubscriptionResolver {
         console.log('With withCancel subscriptionWithFilter')
       }),
   })
-  subscriptionWithFilter(@Root() data: PubSubMessageBody[]) {
-    const newNotification: Notification = { id: 1, message: data[0].domainMessage.message, date: new Date() }
+  subscriptionWithFilter(@Root() data: any) {
+    console.log(data)
+    const newNotification: Notification = { id: 1, message: data.message, date: new Date() }
     return newNotification
   }
 }

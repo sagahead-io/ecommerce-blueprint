@@ -113,7 +113,11 @@
         "name": "svc: api-gateway",
         "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
         "skipFiles": ["<node_internals>/**", "node_modules/**"],
-        "args": ["${workspaceFolder}/services/api-gateway/src/index.ts"]
+        "args": ["${workspaceFolder}/services/api-gateway/src/index.ts"],
+        "env": {
+          "TS_NODE_PROJECT": "services/api-gateway/tsconfig.json",
+          "NODE_ENV": "development"
+        }
     },
     // Service workflows engine
     {

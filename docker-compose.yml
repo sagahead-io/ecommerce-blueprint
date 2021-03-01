@@ -35,3 +35,10 @@ services:
     restart: always
     ports:
       - '50001:8080'
+  ecomm.amqp:
+    image: rabbitmq:3-management
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+          - HOSTNAME=rabbitmq 

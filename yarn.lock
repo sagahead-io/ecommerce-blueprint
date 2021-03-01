@@ -2407,12 +2407,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@node-ts/bus-core@npm:^0.6.5":
+  version: 0.6.5
+  resolution: "@node-ts/bus-core@npm:0.6.5"
+  dependencies:
+    "@node-ts/bus-messages": ^0.3.1
+    "@types/node": ^12.12.39
+    autobind-decorator: ^2.4.0
+    class-transformer: ^0.3.1
+    inversify: ^5.0.1
+    reflect-metadata: ^0.1.13
+    serialize-error: ^4.1.0
+    tslib: ^1.11.1
+  peerDependencies:
+    "@node-ts/logger-core": ^0.0.17
+    inversify: ">= 5.0.1"
+  checksum: 5caa2f204b1c15df818a5adc2304b9e8e9b0d059efe52651fb021080592ce8bc0894478485eefd1c5e9d18d4c6489b9e247f37dfc86d8d93cc1a8c939a4be8b3
+  languageName: node
+  linkType: hard
+
 "@node-ts/bus-messages@npm:^0.3.0":
   version: 0.3.0
   resolution: "@node-ts/bus-messages@npm:0.3.0"
   dependencies:
     tslib: ^1.9.3
   checksum: 92cf12128cb2c820f39741a90dde0d87331c77dc1f2715e59f94a6cb4963c876a883646021f60987cd851b26f2e71f50194aeb277683ca35acd63192043ffa20
+  languageName: node
+  linkType: hard
+
+"@node-ts/bus-messages@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@node-ts/bus-messages@npm:0.3.1"
+  dependencies:
+    tslib: ^1.13.0
+  checksum: 0c377e7e3d9d5dac9e4d1207c01e75dbb5b76644782ef048e1e2220b73616ee097fb6f92d40f5f187c84ef2267a7d79d1bf6ba2e999443e3bb639ecf3a19e57d
   languageName: node
   linkType: hard
 
@@ -2432,6 +2460,24 @@ __metadata:
     inversify: ^5.0.1
     reflect-metadata: ^0.1.13
   checksum: f9a14c47f110dcd8c00e68a2a87424d825244d2779a9c51e2c2ec51c87068364c48c64728604f769e9e864adf6f36e23eecf551889568699dcc667507164c670
+  languageName: node
+  linkType: hard
+
+"@node-ts/bus-rabbitmq@npm:^0.6.5":
+  version: 0.6.5
+  resolution: "@node-ts/bus-rabbitmq@npm:0.6.5"
+  dependencies:
+    "@node-ts/bus-core": ^0.6.5
+    "@node-ts/bus-messages": ^0.3.1
+    amqplib: ^0.6.0
+    tslib: ^1.9.3
+    uuid: ^3.3.2
+  peerDependencies:
+    "@node-ts/bus-core": ^0.1.4
+    "@node-ts/logger-core": ^0.0.13
+    inversify: ^5.0.1
+    reflect-metadata: ^0.1.13
+  checksum: c3fd29377ec19e279d53a2282679a30358805a7cd4f4728a6edb4181fb2bc113babe4753052c77628f26d837a1a6cf23b978dedd94f417f0470879f97afd7691
   languageName: node
   linkType: hard
 
@@ -2609,35 +2655,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sagahead/graphql-snssqs-subscriptions@workspace:libs/graphql-snssqs-subscriptions":
-  version: 0.0.0-use.local
-  resolution: "@sagahead/graphql-snssqs-subscriptions@workspace:libs/graphql-snssqs-subscriptions"
-  dependencies:
-    "@node-ts/bus-core": ^0.6.3
-    "@node-ts/bus-messages": ^0.3.0
-    "@node-ts/bus-sqs": ^0.5.5
-    "@node-ts/logger-core": ^0.1.1
-    "@types/debug": ^4.1.5
-    "@types/jest": ^26.0.20
-    "@types/node": ^14.14.21
-    aws-sdk: ^2.828.0
-    aws-sdk-mock: ^5.1.0
-    debug: ^4.3.1
-    dotenv: ^8.2.0
-    graphql: ^15.4.0
-    graphql-subscriptions: ^1.1.0
-    inversify: ^5.0.5
-    jest: ^26.6.3
-    jest-emotion: ^11.0.0
-    npm-run-all: ^4.1.5
-    reflect-metadata: ^0.1.13
-    ts-jest: ^26.4.4
-    ts-node: ^9.1.1
-    tslib: ^2.1.0
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
 "@services/api-gateway@workspace:services/api-gateway":
   version: 0.0.0-use.local
   resolution: "@services/api-gateway@workspace:services/api-gateway"
@@ -2645,7 +2662,6 @@ __metadata:
     "@graphql-tools/delegate": ^7.0.8
     "@graphql-tools/wrap": ^7.0.5
     "@libs/logger": "workspace:*"
-    "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions"
     "@types/jest": ^26.0.16
     "@types/tsc-watch": ^4
     dotenv: ^8.2.0
@@ -2671,14 +2687,17 @@ __metadata:
     "@libs/federated-server": "workspace:libs/federated-server"
     "@libs/integrate-auth0": "workspace:libs/integrate-auth0"
     "@libs/logger": "workspace:libs/logger"
-    "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions"
+    "@types/amqplib": ^0
     "@types/jest": ^26.0.16
     "@types/tsc-watch": ^4
+    amqplib: ^0.7.0
     class-validator: ^0.13.0
     dotenv: ^8.2.0
     fastify: ^3.12.0
     graphql: ^15.4.0
+    graphql-amqp-subscriptions: ^1.1.1
     graphql-subscriptions: ^1.1.0
+    iterall: ^1.3.0
     jest: ^26.6.3
     mercurius: ^7.1.0
     reflect-metadata: ^0.1.13
@@ -2699,12 +2718,12 @@ __metadata:
     "@node-ts/bus-core": ^0.6.3
     "@node-ts/bus-messages": ^0.3.0
     "@node-ts/bus-postgres": ^0.5.3
+    "@node-ts/bus-rabbitmq": ^0.6.5
     "@node-ts/bus-sqs": ^0.5.5
     "@node-ts/bus-workflow": ^0.6.3
     "@node-ts/code-standards": ^0.0.10
     "@node-ts/logger-core": ^0.1.1
     "@node-ts/logger-winston": ^0.1.1
-    "@sagahead/graphql-snssqs-subscriptions": "workspace:libs/graphql-snssqs-subscriptions"
     "@types/jest": ^26.0.16
     "@types/tsc-watch": ^4
     aws-sdk: ^2.827.0
@@ -2728,15 +2747,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/commons@npm:^1.6.0, @sinonjs/commons@npm:^1.8.1":
-  version: 1.8.2
-  resolution: "@sinonjs/commons@npm:1.8.2"
-  dependencies:
-    type-detect: 4.0.8
-  checksum: b7eb499e3537a487160fcc42e65b9ad8c7d70ee4a1bbebacdbe28149e01b2da501912df2fbf06c81eac51de8c0ad10eaae573b31932ee747c9f1949fee30c20d
-  languageName: node
-  linkType: hard
-
 "@sinonjs/commons@npm:^1.7.0":
   version: 1.8.1
   resolution: "@sinonjs/commons@npm:1.8.1"
@@ -2746,30 +2756,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:^6.0.0, @sinonjs/fake-timers@npm:^6.0.1":
+"@sinonjs/fake-timers@npm:^6.0.1":
   version: 6.0.1
   resolution: "@sinonjs/fake-timers@npm:6.0.1"
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 64458b908773638dda08b555a00e6fbbbc679735348291dc1b7f437ada2f60242537fdc48e4ee82d2573d86984ec87e755b66a96c0ed9ebf0f46b4c6687ccde2
-  languageName: node
-  linkType: hard
-
-"@sinonjs/samsam@npm:^5.3.0":
-  version: 5.3.1
-  resolution: "@sinonjs/samsam@npm:5.3.1"
-  dependencies:
-    "@sinonjs/commons": ^1.6.0
-    lodash.get: ^4.4.2
-    type-detect: ^4.0.8
-  checksum: 0277cd0b71146efed3d243edddc98362adcc25c13e0067b91500fd990792194be64b0ace6f4ba9f98cdec60ee46749e24aad44b46193cfa73096c5ef309b00a1
-  languageName: node
-  linkType: hard
-
-"@sinonjs/text-encoding@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@sinonjs/text-encoding@npm:0.7.1"
-  checksum: fbc2abff23dce7f8842a64c61a4183a9300b03b8b4f03dc2739c8172fd3e401ed8f28fb1c5aac85b3cc0935f69bdb9823dd864a2e22110626751ff855879a76a
   languageName: node
   linkType: hard
 
@@ -2986,6 +2978,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/amqplib@npm:^0":
+  version: 0.5.17
+  resolution: "@types/amqplib@npm:0.5.17"
+  dependencies:
+    "@types/bluebird": "*"
+    "@types/node": "*"
+  checksum: e0026e34f0b5c0c8b6df49c95fdac5542a5d68534bdaa9bd5c80827f96a65d2392667162461669f869226e345fb3cd97c4bb3f89217080b0f4851f4167f07b50
+  languageName: node
+  linkType: hard
+
 "@types/anymatch@npm:*":
   version: 1.3.1
   resolution: "@types/anymatch@npm:1.3.1"
@@ -3055,6 +3057,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/bluebird@npm:*":
+  version: 3.5.33
+  resolution: "@types/bluebird@npm:3.5.33"
+  checksum: 45f7adeec6e656501f5b2127d5cc1538d3ae497d06bfa00d8d7f51eb2aa482267b3b4868ac1c75fc84acfad86d2c0d4de8af535cf725156f222d679df9694aff
+  languageName: node
+  linkType: hard
+
 "@types/body-parser@npm:*":
   version: 1.19.0
   resolution: "@types/body-parser@npm:1.19.0"
@@ -3083,13 +3092,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: 6f712a0408ed119a42037bcbc38c12e053d3ffe11337221a3966c9e29a21c8455e331fe2116c426361c0b2c0e44cb3fb1f83594326e42ba34ce4723d726b7d30
-  languageName: node
-  linkType: hard
-
-"@types/debug@npm:^4.1.5":
-  version: 4.1.5
-  resolution: "@types/debug@npm:4.1.5"
-  checksum: 416ad24bc589be0fb8c78bea972aa7d4ffdf6b136239701b1792674463b2dbf8c6707f6055ec484f79ec1f2b528ffef90c87e55df7e4a0f458184cad5bf0cfc8
   languageName: node
   linkType: hard
 
@@ -3240,7 +3242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:*, @types/jest@npm:^26.0.15, @types/jest@npm:^26.0.20":
+"@types/jest@npm:*, @types/jest@npm:^26.0.15":
   version: 26.0.20
   resolution: "@types/jest@npm:26.0.20"
   dependencies:
@@ -3330,17 +3332,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^12.12.39":
+  version: 12.20.4
+  resolution: "@types/node@npm:12.20.4"
+  checksum: 16d002434239f11379819fc3d2a85f0c2652cf9fb0dcaf581e8652b85aef3816bba915552388d7db72f4f6d079822ab0f16a571980eeedb2acceedf2a9e5c940
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^13.7.0":
   version: 13.13.39
   resolution: "@types/node@npm:13.13.39"
   checksum: f618cab2f86dc6dada7600d51a552cb3d4e40f19e3e299a148ff13d9d5fba10e55d010db77e3e3267030f1d490e600e01f0fc21ed1d371fb4083e3bc8045695c
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.14.21":
-  version: 14.14.21
-  resolution: "@types/node@npm:14.14.21"
-  checksum: b659823ffa01684ff2cb4edf0b70ea76d7eae6cd86af43de62ae6b460c174161850fb75a1be50ab60c4519c14babd4ec430ddbbe6689e341073ba10ff106311c
   languageName: node
   linkType: hard
 
@@ -4290,6 +4292,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"amqplib@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "amqplib@npm:0.6.0"
+  dependencies:
+    bitsyntax: ~0.1.0
+    bluebird: ^3.5.2
+    buffer-more-ints: ~1.0.0
+    readable-stream: 1.x >=1.1.9
+    safe-buffer: ~5.1.2
+    url-parse: ~1.4.3
+  checksum: 20da6c5504df5b993b6e255f1912913c543481c097c9f626c4139ea36868db4e2a6301f7b7b86bfc1176f38ddbae7705542731948b4bb174900154182d7fad8a
+  languageName: node
+  linkType: hard
+
+"amqplib@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "amqplib@npm:0.7.0"
+  dependencies:
+    bitsyntax: ~0.1.0
+    bluebird: ^3.5.2
+    buffer-more-ints: ~1.0.0
+    readable-stream: 1.x >=1.1.9
+    safe-buffer: ~5.1.2
+    url-parse: ~1.4.3
+  checksum: b61a697050c7b1c4eaf84bcbabc6b567e3bb2b38a7f2bdb24e4b6d1d9bc1b3c87399beaf5ca6b66d609e8aa34db63d146cbbb8bdddc40bc764902c50f7f4a3fc
+  languageName: node
+  linkType: hard
+
 "ansi-colors@npm:^3.0.0":
   version: 3.2.4
   resolution: "ansi-colors@npm:3.2.4"
@@ -4808,17 +4838,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-mock@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "aws-sdk-mock@npm:5.1.0"
-  dependencies:
-    aws-sdk: ^2.637.0
-    sinon: ^9.0.1
-    traverse: ^0.6.6
-  checksum: 2c85ba293a27e8aa7cfe28eadc4b1ad95156639dd239bc3355f3e18865af319ce4e51da76673e529158dd5f01a8a39ede7e360ae3089c37f89cf1e673cc6b556
-  languageName: node
-  linkType: hard
-
 "aws-sdk@npm:^2.437.0":
   version: 2.826.0
   resolution: "aws-sdk@npm:2.826.0"
@@ -4833,23 +4852,6 @@ __metadata:
     uuid: 3.3.2
     xml2js: 0.4.19
   checksum: 7c7107683a9e89e2cbc6df8773acae3c87b436a25f857668a8d8230ce12306d2636bf210e6801709462ffac744d5c622c4c6f1e4d6d6e4cddf43e6718057a8e9
-  languageName: node
-  linkType: hard
-
-"aws-sdk@npm:^2.637.0, aws-sdk@npm:^2.828.0":
-  version: 2.828.0
-  resolution: "aws-sdk@npm:2.828.0"
-  dependencies:
-    buffer: 4.9.2
-    events: 1.1.1
-    ieee754: 1.1.13
-    jmespath: 0.15.0
-    querystring: 0.2.0
-    sax: 1.2.1
-    url: 0.10.3
-    uuid: 3.3.2
-    xml2js: 0.4.19
-  checksum: 455a466d861609e712bca916f2b4a1e1ebab5fce776701eb5f1ca2783e4a843254a4d72f29a6ce834bc01212eff95dea6aa020022c0dccd8a96866e81ccd9f39
   languageName: node
   linkType: hard
 
@@ -5214,6 +5216,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bitsyntax@npm:~0.1.0":
+  version: 0.1.0
+  resolution: "bitsyntax@npm:0.1.0"
+  dependencies:
+    buffer-more-ints: ~1.0.0
+    debug: ~2.6.9
+    safe-buffer: ~5.1.2
+  checksum: 2957c0ea6f6216a2d840e289a14a32a86c635ddeb55c7f99175da826227d92bf2cead330321bfe2b196af87cd76f1dc1cfe9c5d616c298a85fa418cf59cf66dd
+  languageName: node
+  linkType: hard
+
 "bl@npm:^4.0.3":
   version: 4.0.3
   resolution: "bl@npm:4.0.3"
@@ -5225,7 +5238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.5.5":
+"bluebird@npm:^3.5.2, bluebird@npm:^3.5.5":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 4f2288662f3d4eadbb82d4daa4a7d7976a28fa3c7eb4102c9b4033b03e5be4574ba123ac52a7c103cde4cb7b2d2afc1dbe41817ca15a29ff21ecd258d0286047
@@ -5489,6 +5502,13 @@ __metadata:
   version: 1.1.1
   resolution: "buffer-indexof@npm:1.1.1"
   checksum: f7114185678d4ebd66b68a8d76feda5a66ea5df57101e7af1c3faef6ff98ca6ac15891da200d7eea99153573e110d05bc9fdf493278e3bd2b0f117e84ff08f64
+  languageName: node
+  linkType: hard
+
+"buffer-more-ints@npm:~1.0.0":
+  version: 1.0.0
+  resolution: "buffer-more-ints@npm:1.0.0"
+  checksum: 50c65dfc152b68b067b140f3c0aa9c62353ec0628604bd0dcacba5b5bc43fe8cae46745153c37d9ab80478223de7db2e17b20aba826c3cf2443a1e76d5ad064c
   languageName: node
   linkType: hard
 
@@ -5929,6 +5949,13 @@ __metadata:
   version: 0.2.3
   resolution: "class-transformer@npm:0.2.3"
   checksum: e5967902d0d3b142f055608b85236ad099b42445ffbe61d69f8e5d6a5cfed80fe0ee68f7becfc0a821685d7e72d8decc5feb8d45d84d921cbfc11a01b6d895b9
+  languageName: node
+  linkType: hard
+
+"class-transformer@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "class-transformer@npm:0.3.1"
+  checksum: 3ae3ef2510d2822766a97d31eb7ca550dabda56cbfe70968f295420531667ca95b4d84cddfe2dc302abc41c8e26d667d43235b0f4759eee09a007741cc307bc8
   languageName: node
   linkType: hard
 
@@ -6945,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.0, debug@npm:^2.6.9":
+"debug@npm:2.6.9, debug@npm:^2.2.0, debug@npm:^2.3.3, debug@npm:^2.6.0, debug@npm:^2.6.9, debug@npm:~2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -6954,7 +6981,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.3.1":
+"debug@npm:4":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
@@ -6963,6 +6990,15 @@ __metadata:
     supports-color:
       optional: true
   checksum: 5543570879e2274f6725d4285a034d6e0822d35faefc6f55965933fb440e8c21eb3a0bef934e66f4b6b491f898ee2de37cab980e9d4fd61372136c19d3ce4527
+  languageName: node
+  linkType: hard
+
+"debug@npm:4.1.1":
+  version: 4.1.1
+  resolution: "debug@npm:4.1.1"
+  dependencies:
+    ms: ^2.1.1
+  checksum: 3601a6ce96e4698ed3edf0ee6e67ef0317adfcdae2f66a43b23d1b14e8888b422337429b16dbbcba6801e7bfa6cbb8de3128fbacfb8ae1cd9bd7615ea6baf970
   languageName: node
   linkType: hard
 
@@ -7211,7 +7247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diff@npm:^4.0.1, diff@npm:^4.0.2":
+"diff@npm:^4.0.1":
   version: 4.0.2
   resolution: "diff@npm:4.0.2"
   checksum: 81b5cd7ddde6f0ba2a532d434cfdca365aedd6cc62bb133e851e66e071d40382a30924a07c1034bd3d5a2e332146f64514b73c06fe2ebc0490a67f0c98da79fb
@@ -9446,6 +9482,20 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
+"graphql-amqp-subscriptions@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "graphql-amqp-subscriptions@npm:1.1.1"
+  dependencies:
+    debug: 4.1.1
+    graphql-subscriptions: 1.1.0
+    uuid: 8.3.0
+  peerDependencies:
+    amqplib: ^0.5.3 || ^0.6.0
+    graphql: ^14.5.0 || ^14.6.0 || ^14.7.0
+  checksum: e08ae49afbf30c1e98b06c06b87110cd6431477231a86ac4e2d72881c93201b9ac8e518cfa9c6339ffa9364e497cfee9eb02ddb9309309b8c7abfec5f88e774c
+  languageName: node
+  linkType: hard
+
 "graphql-jit@npm:^0.5.0":
   version: 0.5.0
   resolution: "graphql-jit@npm:0.5.0"
@@ -9473,7 +9523,7 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"graphql-subscriptions@npm:^1.1.0":
+"graphql-subscriptions@npm:1.1.0, graphql-subscriptions@npm:^1.1.0":
   version: 1.1.0
   resolution: "graphql-subscriptions@npm:1.1.0"
   dependencies:
@@ -10800,7 +10850,7 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"iterall@npm:^1.2.1":
+"iterall@npm:*, iterall@npm:^1.2.1, iterall@npm:^1.3.0":
   version: 1.3.0
   resolution: "iterall@npm:1.3.0"
   checksum: 25ae2d07cf97fc35d43fa7af814839689416b83d3ade0fec97a62c58b7b9fad5ff89dd0ede99f2d67cae2697ffa6987f0ab10876f40ae6466e802609a05b1006
@@ -10949,13 +10999,6 @@ fsevents@^2.1.2:
     jest-util: ^26.6.2
     pretty-format: ^26.6.2
   checksum: 628eaeca647adb4d6cf75bdc17c9ceb8cbcbb6921d838a583cd4de3db188e3e49b62209e3a0703f1281db379d1b2c07254900e5d97e85d61dd193d7b40361d3a
-  languageName: node
-  linkType: hard
-
-"jest-emotion@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "jest-emotion@npm:11.0.0"
-  checksum: 98becc020f11e5df72c6e1e0769e5ac8e53640b7d74fbdcd1995038067f757a17f1340505f022811d8d534db384c83a8659ef3bb1e3eb539859e185469a46ff0
   languageName: node
   linkType: hard
 
@@ -11654,13 +11697,6 @@ fsevents@^2.1.2:
     array-includes: ^3.1.2
     object.assign: ^4.1.2
   checksum: 2a8033e63234d04e6ed77ac91222e2dff527f64cf70c10d2f26fda6f35dc9b78d5e3a43fc3d28df7fe0dab45294b94c9c90e58ab242ecf14e58cd39691ee0ed4
-  languageName: node
-  linkType: hard
-
-"just-extend@npm:^4.0.2":
-  version: 4.1.1
-  resolution: "just-extend@npm:4.1.1"
-  checksum: 9dec0ba527809ca813f98dea1e54e60f6901ebdad475aa2a6c487c9873c81d71c783feebacd1ad472309c07413201c3af2ea5abd68f0b0333b5162f474565ad7
   languageName: node
   linkType: hard
 
@@ -12924,19 +12960,6 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"nise@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "nise@npm:4.0.4"
-  dependencies:
-    "@sinonjs/commons": ^1.7.0
-    "@sinonjs/fake-timers": ^6.0.0
-    "@sinonjs/text-encoding": ^0.7.1
-    just-extend: ^4.0.2
-    path-to-regexp: ^1.7.0
-  checksum: 5ead54f4f35680b121f623099ccaee4bde3208167c11c28ccebcc1810ff6053f4e8093fcbfefbc7fa6d12e0a7a2488901da976127fbda2252a999c623543968e
-  languageName: node
-  linkType: hard
-
 "no-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "no-case@npm:3.0.4"
@@ -13840,15 +13863,6 @@ fsevents@^2.1.2:
   version: 0.1.7
   resolution: "path-to-regexp@npm:0.1.7"
   checksum: 342fdb0ca48415d6eccdbe6d4180fd0fa4786ccc96ab3f74fcdf7acfc99e075af25e6077c8086c341dcfb4f5f84401ecd21e6cd7b24e0c3b556fb7ffb2570da7
-  languageName: node
-  linkType: hard
-
-"path-to-regexp@npm:^1.7.0":
-  version: 1.8.0
-  resolution: "path-to-regexp@npm:1.8.0"
-  dependencies:
-    isarray: 0.0.1
-  checksum: 4c0d9aaf3fc55db0b2d9aab379856acbf4e437f2252bbc2a178aec9f707c8457f8084ea6243a80e0b37c8c1c20d23e918cd43e772a7e71142a8ad67af699686b
   languageName: node
   linkType: hard
 
@@ -15703,7 +15717,7 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:1.1.x":
+"readable-stream@npm:1.1.x, readable-stream@npm:1.x >=1.1.9":
   version: 1.1.14
   resolution: "readable-stream@npm:1.1.14"
   dependencies:
@@ -16332,7 +16346,7 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
+"safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1, safe-buffer@npm:~5.1.2":
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
   checksum: 2708587c1b5e70a5e420714ceb59f30f5791c6e831d39812125a008eca63a4ac18578abd020a0776ea497ff03b4543f2b2a223a7b9073bf2d6c7af9ec6829218
@@ -16867,20 +16881,6 @@ resolve@1.18.1:
   dependencies:
     safe-stable-stringify: ^1.1.0
   checksum: 7f9ca6ce4aac149e3f9b9fd9154dc34c8d1a4eebbadf296c791299f3c434cbdc1cff8fa365d235ffe331fc74066cfd7400138afffcb5b4684bb8c87c4cb81200
-  languageName: node
-  linkType: hard
-
-"sinon@npm:^9.0.1":
-  version: 9.2.3
-  resolution: "sinon@npm:9.2.3"
-  dependencies:
-    "@sinonjs/commons": ^1.8.1
-    "@sinonjs/fake-timers": ^6.0.1
-    "@sinonjs/samsam": ^5.3.0
-    diff: ^4.0.2
-    nise: ^4.0.4
-    supports-color: ^7.1.0
-  checksum: 7c818e8e3bd257eec8a6c3d0da310ca7331831fcf1742d3f84196979c3df5967636851fe950f9f9987a4da5090962011445df996e2455f8b837fb0938b7bd276
   languageName: node
   linkType: hard
 
@@ -18122,13 +18122,6 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"traverse@npm:^0.6.6":
-  version: 0.6.6
-  resolution: "traverse@npm:0.6.6"
-  checksum: f2bfaae69246bc1b630ad51d44be0a2a953be1650f754c299e5a05e4f00e4b493aa6c37a98410f9c2c902a21bef7f1ab10a9cdb9b9e8ee8813e1a9e95074dafd
-  languageName: node
-  linkType: hard
-
 "treeify@npm:^1.1.0":
   version: 1.1.0
   resolution: "treeify@npm:1.1.0"
@@ -18192,27 +18185,6 @@ resolve@1.18.1:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: 4735671aabf8c5f3165683b481884f5080cb2d911771c8da368f8565d5f8d769ee6f504d2d1357429ceea076f9eb9ea6714c13a46d74b3d21c5c119a6e4c27fc
-  languageName: node
-  linkType: hard
-
-"ts-node@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "ts-node@npm:9.1.1"
-  dependencies:
-    arg: ^4.1.0
-    create-require: ^1.1.0
-    diff: ^4.0.1
-    make-error: ^1.1.1
-    source-map-support: ^0.5.17
-    yn: 3.1.1
-  peerDependencies:
-    typescript: ">=2.7"
-  bin:
-    ts-node: dist/bin.js
-    ts-node-script: dist/bin-script.js
-    ts-node-transpile-only: dist/bin-transpile.js
-    ts-script: dist/bin-script-deprecated.js
-  checksum: a90db4a342872cd0e7a80babdfcb15d2f7c06e700d735003098f7cc79db575c3380580c58a19ae0d0eaab553af083651d4237060c92170e6f8ac4e64693113ea
   languageName: node
   linkType: hard
 
@@ -18335,7 +18307,7 @@ resolve@1.18.1:
   languageName: node
   linkType: hard
 
-"type-detect@npm:4.0.8, type-detect@npm:^4.0.8":
+"type-detect@npm:4.0.8":
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
   checksum: e01dc6ac9098192a7859fb86c7b4073709a4e13a5cc02c54d54412378bb099563fda7a7a85640f33e3a7c2e8189182eb1511f263e67f402b2d63fe81afdde785
@@ -18661,7 +18633,7 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
-"url-parse@npm:^1.4.3":
+"url-parse@npm:^1.4.3, url-parse@npm:~1.4.3":
   version: 1.4.7
   resolution: "url-parse@npm:1.4.7"
   dependencies:
@@ -18778,6 +18750,15 @@ typescript@^4.1.2:
   bin:
     uuid: ./bin/uuid
   checksum: f407d974ca30b20bfbd32ae9cc05d20e18df5fd9e5fa088d91db04a6597125dcc8d09eeeb7237782724daba36418e24f557e0245e6ce7b8e4ad25d6436f1cde1
+  languageName: node
+  linkType: hard
+
+"uuid@npm:8.3.0":
+  version: 8.3.0
+  resolution: "uuid@npm:8.3.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: a2bdb8a3eb80a53506e9657e7e1f70d7600562bf43fa010a645fd1deb7de1686df61c496c6f9826bac4be8db4d1ac1b976dd6fdf3bd083207eec1674507936fb
   languageName: node
   linkType: hard
 

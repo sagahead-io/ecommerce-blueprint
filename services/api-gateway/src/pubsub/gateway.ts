@@ -14,7 +14,7 @@ export class GatewayPubSub {
     }
 
     const close = () => {
-      console.log('close', topic)
+      console.log('closed', topic)
       this.emitter.removeListener(topic, listener)
     }
 
