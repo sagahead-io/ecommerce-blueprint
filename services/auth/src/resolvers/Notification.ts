@@ -2,26 +2,10 @@ import { Resolver, Query, Mutation, Arg, Subscription, Root } from 'type-graphql
 import { Notification, NotificationPayload } from '../entities/Notification'
 import { PubSubAddress } from '@libs/events-commands'
 import { pubsub } from '../connectors/pubsub'
-
-export function withCancel<T>(
-  asyncIterator: AsyncIterator<T | undefined>,
-  onCancel: () => void,
-): AsyncIterator<T | undefined> {
-  if (!asyncIterator.return) {
-    asyncIterator.return = () => Promise.resolve({ value: undefined, done: true })
-  }
-
-  const savedReturn = asyncIterator.return.bind(asyncIterator)
-  asyncIterator.return = () => {
-    onCancel()
-    return savedReturn()
-  }
-
-  return asyncIterator
-}
+import { withCancel } from '../utils/withCancel'
 
 @Resolver()
-export class SubscriptionResolver {
+export class NotificationResolver {
   private autoIncrement = 0
 
   @Query((_) => Date)
@@ -30,17 +14,22 @@ export class SubscriptionResolver {
   }
 
   @Mutation((_) => Boolean)
-  async pubSubMutation(@Arg('message', { nullable: true }) message?: string): Promise<boolean> {
+  async addNotification(@Arg('message', { nullable: true }) message?: string): Promise<boolean> {
     const payload: NotificationPayload = { id: ++this.autoIncrement, message }
     await pubsub.publish(PubSubAddress.Auth, payload)
     return true
   }
 
-  // @Subscription(() => Notification, { topics: PubSubAddress.Auth })
-  // normalSubscription(@Root() data: PubSubMessageBody[]): Notification {
-  //   const { domainMessage } = data[0]
-  //   return { id: domainMessage.id, message: domainMessage.message, date: new Date() }
-  // }
+  @Mutation((_) => Boolean)
+  async addEvent(
+    @Arg('message', { nullable: true })
+    message?: string,
+  ): Promise<boolean> {
+    const busMsg = new WorkflowsExampleEvent(message || '')
+    console.log(busMsg.$name)
+    await pubsub.publish(busMsg.$name, busMsg)
+    return true
+  }
 
   @Subscription((_) => Notification, {
     subscribe: () =>
@@ -48,9 +37,21 @@ export class SubscriptionResolver {
         console.log('With withCancel subscriptionWithFilter')
       }),
   })
-  subscriptionWithFilter(@Root() data: any) {
+  subscribeNotifications(@Root() data: any) {
     console.log(data)
     const newNotification: Notification = { id: 1, message: data.message, date: new Date() }
     return newNotification
+  }
+
+  @Subscription(() => Notification, {
+    topics: PubSubAddress.AuthSubscription,
+  })
+  subscribeEvents(@Root() data: any): Notification {
+    const { domainMessage } = data
+    return {
+      id: 1,
+      message: domainMessage.message,
+      date: new Date(),
+    }
   }
 }

@@ -1,3 +1,3 @@
 export * from './commands'
 export * from './events'
-export * from './addresses'
+export * from './enums'

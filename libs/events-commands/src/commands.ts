@@ -1,8 +1,6 @@
 import { Command } from '@node-ts/bus-messages'
-import { PubSubAddress } from './addresses'
-
-export class WorkflowsOrderCommand extends Command {
-  readonly $name = `${PubSubAddress.Workflows}-example`
+export class OrderSomething extends Command {
+  readonly $name = `workflows_order_something`
   readonly $version = 1
 
   message: string

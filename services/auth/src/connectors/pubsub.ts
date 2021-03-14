@@ -1,5 +1,6 @@
 import { AMQPPubSub } from 'graphql-amqp-subscriptions'
 import amqp from 'amqplib'
+import env from '../utils/env'
 
 export let pubsub: AMQPPubSub
 
@@ -10,7 +11,7 @@ export const initPubSub = async (): Promise<AMQPPubSub> => {
     pubsub = new AMQPPubSub({
       connection: conn,
       exchange: {
-        name: '@services/auth',
+        name: env.SERVICE_EXCHANGE,
         type: 'topic',
         options: {
           durable: true,
@@ -18,7 +19,7 @@ export const initPubSub = async (): Promise<AMQPPubSub> => {
         },
       },
       queue: {
-        name: 'auth',
+        name: env.SERVICE,
         options: {
           exclusive: true,
           durable: true,

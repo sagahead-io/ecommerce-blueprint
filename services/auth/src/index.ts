@@ -1,10 +1,9 @@
 import { bootstrapFederatedServer } from '@libs/federated-server'
 import { FastifyRequest } from 'fastify'
 import { HelloResolver } from './resolvers/Hello'
-import { SubscriptionResolver } from './resolvers/Subscription'
+import { NotificationResolver } from './resolvers/Notification'
 import env from './utils/env'
 import logger from './utils/logger'
-import { WorkflowsSubscriptionResolver } from './resolvers/WorkflowsSubscription'
 import { initPubSub } from './connectors/pubsub'
 // import { MercuriusContext } from 'mercurius'
 // import { setupAuth0Clients, installAuth0Apps, installAuth0Roles } from '@libs/integrate-auth0'
@@ -28,7 +27,7 @@ const start = async () => {
     const pubSub = await initPubSub()
     const result = await bootstrapFederatedServer({
       schemaOpts: {
-        resolvers: [HelloResolver, SubscriptionResolver, WorkflowsSubscriptionResolver],
+        resolvers: [HelloResolver, NotificationResolver],
         pubSub,
       },
       adapterOpts: {

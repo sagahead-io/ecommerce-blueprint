@@ -1,20 +1,6 @@
 import { Event } from '@node-ts/bus-messages'
-import { PubSubAddress } from './addresses'
-
-export class AuthSubscriptionExampleEvent extends Event {
-  readonly $name = `${PubSubAddress.AuthSubscription}`
-  readonly $version = 1
-
-  message: string
-
-  constructor(message: string) {
-    super()
-    this.message = message
-  }
-}
-
-export class WorkflowsExampleEvent extends Event {
-  readonly $name = `${PubSubAddress.Workflows}-example`
+export class StartExampleWorkflow extends Event {
+  readonly $name = `workflows_example_event`
   readonly $version = 1
 
   message: string
