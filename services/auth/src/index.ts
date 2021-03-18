@@ -1,4 +1,4 @@
-import { bootstrapFederatedServer } from '@libs/federated-server'
+import { bootstrapFederatedServer } from '@commons/federated-server'
 import { FastifyRequest } from 'fastify'
 import { HelloResolver } from './resolvers/Hello'
 import { NotificationResolver } from './resolvers/Notification'
@@ -6,7 +6,7 @@ import env from './utils/env'
 import logger from './utils/logger'
 import { initPubSub } from './connectors/pubsub'
 // import { MercuriusContext } from 'mercurius'
-// import { setupAuth0Clients, installAuth0Apps, installAuth0Roles } from '@libs/integrate-auth0'
+// import { setupAuth0Clients, installAuth0Apps, installAuth0Roles } from '@commons/integrate-auth0'
 export type ServiceContext = FastifyRequest
 
 const start = async () => {
@@ -37,7 +37,6 @@ const start = async () => {
             ...request,
           } as ServiceContext),
         subscription: {
-          pubsub: pubSub,
           onConnect: (data) => {
             console.log('on connect', data)
             return {

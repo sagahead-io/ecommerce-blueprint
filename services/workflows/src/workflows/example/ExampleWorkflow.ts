@@ -4,7 +4,7 @@ import { ExampleWorkflowData } from './Data'
 import { LOGGER_SYMBOLS, Logger } from '@node-ts/logger-core'
 import { BUS_SYMBOLS, Bus } from '@node-ts/bus-core'
 import { MessageAttributes } from '@node-ts/bus-messages'
-import { WorkflowsExampleEvent, AuthSubscriptionExampleEvent } from '@libs/events-commands'
+import { StartExampleWorkflow, AuthSubscribeEvents } from '@commons/events-commands'
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -21,9 +21,9 @@ export class ExampleWorkflow extends Workflow<ExampleWorkflowData> {
   /**
    * Starts new Example workflow
    */
-  @StartedBy<WorkflowsExampleEvent, ExampleWorkflowData, 'handleExampleWorkflow'>(WorkflowsExampleEvent)
+  @StartedBy<StartExampleWorkflow, ExampleWorkflowData, 'handleExampleWorkflow'>(StartExampleWorkflow)
   async handleExampleWorkflow(
-    event: WorkflowsExampleEvent,
+    event: StartExampleWorkflow,
     _: ExampleWorkflowData,
     { correlationId }: MessageAttributes,
   ): Promise<Partial<ExampleWorkflowData>> {
@@ -33,7 +33,7 @@ export class ExampleWorkflow extends Workflow<ExampleWorkflowData> {
 
     const reply = `Message that was received test from WorkflowsExampleEvent was ${message}`
     await sleep(10000)
-    this.bus.publish(new AuthSubscriptionExampleEvent(reply))
+    this.bus.publish(new AuthSubscribeEvents(reply))
 
     return {
       message: reply,

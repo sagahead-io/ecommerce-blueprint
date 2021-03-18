@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint -tvpi run start",
+    "start-commons": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint -tvpi run commons-build-watch",
     "build": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint -tv run build",
     "test": "jest",
     "test:w": "jest --watch",
@@ -18,7 +19,7 @@
   },
   "workspaces": [
     "services/*",
-    "libs/*",
+    "commons/*",
     "frontends/*"
   ],
   "devDependencies": {

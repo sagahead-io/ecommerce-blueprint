@@ -5,8 +5,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@libs/events-commands": "workspace:libs/events-commands",
-    "@libs/logger": "workspace:*",
+    "@commons/amqp-bus": "workspace:commons/amqp-bus",
+    "@commons/events-commands": "workspace:commons/events-commands",
+    "@commons/logger": "workspace:*",
     "@node-ts/bus-core": "^0.6.3",
     "@node-ts/bus-messages": "^0.3.0",
     "@node-ts/bus-postgres": "^0.5.3",

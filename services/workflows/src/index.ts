@@ -11,8 +11,7 @@ import { dbConfiguration } from './configs/db'
 import logger from './utils/logger'
 import { ExampleWorkflow } from './workflows/example/ExampleWorkflow'
 import { ExampleWorkflowData } from './workflows/example/Data'
-// import env from './utils/env'
-import { BUS_RABBITMQ_SYMBOLS, BusRabbitMqModule, RabbitMqTransportConfiguration } from '@node-ts/bus-rabbitmq'
+import { BUS_RABBITMQ_SYMBOLS, BusRabbitMqModule, RabbitMqTransportConfiguration } from '@commons/amqp-bus'
 import env from './utils/env'
 
 const container = new Container()
@@ -26,6 +25,9 @@ container.load(new WorkflowsModule())
 
 const rabbitConfiguration: RabbitMqTransportConfiguration = {
   queueName: env.SERVICE,
+  deadLetterExchange: `${env.SERVICE_EXCHANGE}-DLQ`,
+  deadLetterQueue: `${env.SERVICE}-dlq`,
+  exchangeType: 'topic',
   connectionString: 'amqp://guest:guest@localhost',
   maxRetries: 5,
 }

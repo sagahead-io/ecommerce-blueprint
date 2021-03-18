@@ -1,9 +1,10 @@
 import Fastify from 'fastify'
 import cors from 'fastify-cors'
-import mercurius from 'mercurius'
+import mercurius, { MercuriusContext } from 'mercurius'
 import logger from './utils/logger'
 import env from './utils/env'
 import { introspectFederatedSchemas } from './utils/schemaHandling'
+// import { GatewayPubSub } from './pubsub/gateway'
 
 const bootstrap = async (): Promise<void> => {
   try {
@@ -28,7 +29,11 @@ const bootstrap = async (): Promise<void> => {
           }
         },
       },
-      subscription: true,
+      subscription: {
+        onDisconnect: (context: MercuriusContext) => {
+          console.log('on disconnect', context)
+        },
+      },
     })
 
     gateway.get('/health', async () => {

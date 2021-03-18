@@ -1,4 +1,4 @@
-import { AMQPPubSub } from 'graphql-amqp-subscriptions'
+import { AMQPPubSub } from '@commons/amqp-subscriptions'
 import amqp from 'amqplib'
 import env from '../utils/env'
 

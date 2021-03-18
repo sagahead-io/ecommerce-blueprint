@@ -82,10 +82,22 @@
       "cwd": "${workspaceFolder}/services/auth"
     },
     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "svc: auth pnp",
+      "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "args": ["${workspaceFolder}/services/auth/src/index.ts"],
+      "env": {
+        "TS_NODE_PROJECT": "services/auth/tsconfig.json",
+        "NODE_ENV": "development"
+      },
+    },
+    {
         "type": "pwa-node",
         "request": "launch",
         "name": "svc: auth",
-        "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "runtimeArgs": ["-r", "ts-node/register"],
         "skipFiles": ["<node_internals>/**", "node_modules/**"],
         "args": ["${workspaceFolder}/services/auth/src/index.ts"],
         "env": {
@@ -110,8 +122,20 @@
     {
         "type": "pwa-node",
         "request": "launch",
-        "name": "svc: api-gateway",
+        "name": "svc: api-gateway pnp",
         "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "args": ["${workspaceFolder}/services/api-gateway/src/index.ts"],
+        "env": {
+          "TS_NODE_PROJECT": "services/api-gateway/tsconfig.json",
+          "NODE_ENV": "development"
+        }
+    },
+    {
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "svc: api-gateway",
+        "runtimeArgs": ["-r", "ts-node/register"],
         "skipFiles": ["<node_internals>/**", "node_modules/**"],
         "args": ["${workspaceFolder}/services/api-gateway/src/index.ts"],
         "env": {
@@ -134,10 +158,22 @@
       "cwd": "${workspaceFolder}/services/workflows"
     },
     {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "svc: workflows pnp",
+      "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "args": ["${workspaceFolder}/services/workflows/src/index.ts"],
+      "env": {
+        "TS_NODE_PROJECT": "services/workflows/tsconfig.json",
+        "NODE_ENV": "development"
+      },
+    },
+    {
         "type": "pwa-node",
         "request": "launch",
         "name": "svc: workflows",
-        "runtimeArgs": ["-r", "./.pnp.js", "-r", "ts-node/register"],
+        "runtimeArgs": ["-r", "ts-node/register"],
         "skipFiles": ["<node_internals>/**", "node_modules/**"],
         "args": ["${workspaceFolder}/services/workflows/src/index.ts"],
         "env": {
