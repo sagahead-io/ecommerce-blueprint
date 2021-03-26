@@ -30,6 +30,7 @@ const rabbitConfiguration: RabbitMqTransportConfiguration = {
   exchangeType: 'topic',
   connectionString: 'amqp://guest:guest@localhost',
   maxRetries: 5,
+  withRoutingKeys: true,
 }
 
 container.rebind(WINSTON_SYMBOLS.WinstonConfiguration).to(LoggerConfiguration)

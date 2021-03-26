@@ -1,8 +1,13 @@
 import { Resolver, Query, Mutation, Arg, Subscription, Root } from 'type-graphql'
 import { Notification, NotificationPayload } from '../entities/Notification'
-import { AUTH_ROUTING_KEYS, AuthSubscribeNotifications, StartExampleWorkflow } from '@commons/events-commands'
+import {
+  AuthSubscribeNotifications,
+  AuthSubscribeNotifications2,
+  AuthSubscribeEvents,
+  StartExampleWorkflow,
+} from '@commons/events-commands'
 import { pubsub } from '../connectors/pubsub'
-import { withCancel } from '../utils/withCancel'
+import { withCancel } from '@commons/amqp-subscriptions'
 
 @Resolver()
 export class NotificationResolver {
@@ -16,7 +21,7 @@ export class NotificationResolver {
   @Mutation((_) => Boolean)
   async addNotification(@Arg('message', { nullable: true }) message?: string): Promise<boolean> {
     const payload: NotificationPayload = { id: ++this.autoIncrement, message }
-    await pubsub.publish(AuthSubscribeNotifications.name, payload)
+    await pubsub.publish(AuthSubscribeNotifications.NAME, payload)
     return true
   }
 
@@ -26,13 +31,13 @@ export class NotificationResolver {
     message?: string,
   ): Promise<boolean> {
     const busMsg = new StartExampleWorkflow(message || '')
-    await pubsub.publish(busMsg.$name, busMsg)
+    await pubsub.publish(StartExampleWorkflow.NAME, busMsg)
     return true
   }
 
   @Subscription((_) => Notification, {
     subscribe: () =>
-      withCancel(pubsub.asyncIterator(AUTH_ROUTING_KEYS.subscribeNotifications), () => {
+      withCancel(pubsub.asyncIterator(AuthSubscribeNotifications.NAME), () => {
         console.log('With withCancel subscriptionWithFilter')
       }),
   })
@@ -44,7 +49,7 @@ export class NotificationResolver {
 
   @Subscription((_) => Notification, {
     subscribe: () =>
-      withCancel(pubsub.asyncIterator(AUTH_ROUTING_KEYS.subscribeNotifications2), () => {
+      withCancel(pubsub.asyncIterator(AuthSubscribeNotifications2.NAME), () => {
         console.log('With withCancel subscriptionWithFilter')
       }),
   })
@@ -55,7 +60,7 @@ export class NotificationResolver {
   }
 
   @Subscription(() => Notification, {
-    topics: AUTH_ROUTING_KEYS.subscribeEvents,
+    topics: AuthSubscribeEvents.NAME,
   })
   subscribeEvents(@Root() data: any): Notification {
     console.log(data)

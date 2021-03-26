@@ -1,23 +1,20 @@
 import { Event } from '@node-ts/bus-messages'
 
-export enum AUTH_ROUTING_KEYS {
-  subscribeNotifications = '@services/auth/subscribeNotifications',
-  subscribeNotifications2 = '@services/auth/subscribeNotifications2',
-  subscribeEvents = '@services/auth/subscribeEvents',
-}
-
 export class AuthSubscribeNotifications extends Event {
-  readonly $name = AUTH_ROUTING_KEYS.subscribeNotifications
+  static NAME = '@services/auth/subscribeNotifications'
+  readonly $name = AuthSubscribeNotifications.NAME
   readonly $version = 1
 }
 
 export class AuthSubscribeNotifications2 extends Event {
-  readonly $name = AUTH_ROUTING_KEYS.subscribeNotifications2
+  static NAME = '@services/auth/subscribeNotifications2'
+  readonly $name = AuthSubscribeNotifications2.name
   readonly $version = 1
 }
 
 export class AuthSubscribeEvents extends Event {
-  readonly $name = AUTH_ROUTING_KEYS.subscribeEvents
+  static NAME = '@services/auth/subscribeEvents'
+  readonly $name = AuthSubscribeEvents.NAME
   readonly $version = 1
 
   message: string
