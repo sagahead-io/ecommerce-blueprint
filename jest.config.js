@@ -1,12 +1,11 @@
+const base = require('./jest.config.base.js');
+
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: require.resolve(`jest-environment-node`),
-  collectCoverageFrom: ['services/*/src/**/*.ts', 'libs/*/src/**/*.ts'],
-  reporters: [`default`, [require.resolve(`jest-junit`), {output: `<rootDir>/junit.xml`}]],
-  testTimeout: 50000,
+  ...base,
+  projects: ['<rootDir>/services/*/jest.config.js', '<rootDir>/commons/*/jest.config.js'],
   globals: {
     'ts-jest': {
-      tsconfig: './tsconfig.base.json',
+      tsConfig: './tsconfig.json',
     },
-  }
-}
+  },
+};

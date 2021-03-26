@@ -1,17 +1,15 @@
-/* tslint:disable:no-unused-expression */
-import { Logger } from './common';
-import { expect } from 'chai';
-import 'mocha';
+import { Logger } from './common'
+import { expect } from 'chai'
+import 'mocha'
 
 describe('Common', () => {
-
   it('should convert a string to a string', () => {
     const message = Logger.convertMessage({
       fields: {
         deliveryTag: 1,
         redelivered: false,
         exchange: 'exchange',
-        routingKey: 'test.test'
+        routingKey: 'test.test',
       },
       properties: {
         contentType: undefined,
@@ -27,13 +25,13 @@ describe('Common', () => {
         type: undefined,
         userId: undefined,
         appId: undefined,
-        clusterId: undefined
+        clusterId: undefined,
       },
-      content: Buffer.from('test')
-    });
-    expect(message).to.exist;
-    expect(message).to.equal('test');
-  });
+      content: Buffer.from('test'),
+    })
+    expect(message).to.exist
+    expect(message).to.equal('test')
+  })
 
   it('should convert a stringified JSON to a JSON', () => {
     const message = Logger.convertMessage({
@@ -41,7 +39,7 @@ describe('Common', () => {
         deliveryTag: 1,
         redelivered: false,
         exchange: 'exchange',
-        routingKey: 'test.test'
+        routingKey: 'test.test',
       },
       properties: {
         contentType: undefined,
@@ -57,12 +55,11 @@ describe('Common', () => {
         type: undefined,
         userId: undefined,
         appId: undefined,
-        clusterId: undefined
+        clusterId: undefined,
       },
-      content: Buffer.from('{"test":"data"}')
-    });
-    expect(message).to.exist;
-    expect(message.test).to.equal('data');
-  });
-
-});
+      content: Buffer.from('{"test":"data"}'),
+    })
+    expect(message).to.exist
+    expect(message.test).to.equal('data')
+  })
+})

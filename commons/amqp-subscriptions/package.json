@@ -9,7 +9,8 @@
     "build": "tsc",
     "vulnerabilities": "npm audit",
     "check-updates": "npm outdated",
-    "test": "TS_NODE_FILES=true TS_NODE_PROJECT=\"./tsconfig.json\" nyc mocha"
+    "test": "TS_NODE_FILES=true TS_NODE_PROJECT=\"./tsconfig.json\" nyc mocha",
+    "test:integration": "echo exit 0;"
   },
   "dependencies": {
     "debug": "4.3.1",

@@ -150,7 +150,7 @@ export class RabbitMqTransport implements Transport<RabbitMqMessage> {
         exchangeName = subscription.topicIdentifier
       } else if (subscription.messageType) {
         const messageName = new subscription.messageType().$name
-        const { exchange, routingKey } = resolveRouting(messageName, messageName)
+        const { exchange, routingKey } = resolveRouting(messageName, this.configuration.withRoutingKeys)
         exchangeName = exchange
         routeKey = routingKey
         await this.assertExchange(exchangeName)
@@ -182,10 +182,7 @@ export class RabbitMqTransport implements Transport<RabbitMqMessage> {
     message: Message,
     messageOptions: MessageAttributes = new MessageAttributes(),
   ): Promise<void> {
-    const nameParts = message.$name.split('/')
-    const exchange = `${nameParts[0]}${nameParts[1] ? '/' + nameParts[1] : ''}`
-    const routingKey = nameParts[1] ? nameParts[2] || '' : ''
-
+    const { exchange, routingKey } = resolveRouting(message.$name, this.configuration.withRoutingKeys)
     await this.assertExchange(exchange)
     const payload = this.messageSerializer.serialize(message)
     this.channel.publish(exchange, routingKey, Buffer.from(payload), {

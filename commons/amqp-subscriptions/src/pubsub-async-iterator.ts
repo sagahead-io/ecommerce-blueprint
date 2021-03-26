@@ -1,5 +1,5 @@
-import { $$asyncIterator } from 'iterall';
-import { PubSubEngine } from 'graphql-subscriptions';
+import { $$asyncIterator } from 'iterall'
+import { PubSubEngine } from 'graphql-subscriptions'
 
 /**
  * A class for digesting PubSubEngine events via the new AsyncIterator interface.
@@ -31,84 +31,82 @@ import { PubSubEngine } from 'graphql-subscriptions';
  * The PubSubEngine whose events will be observed.
  */
 export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
-
-  private pullQueue: Function[];
-  private pushQueue: any[];
-  private eventsArray: string[];
-  private allSubscribed: Promise<number[]>;
-  private listening: boolean;
-  private pubsub: PubSubEngine;
+  private pullQueue: ((data: any) => void)[]
+  private pushQueue: any[]
+  private eventsArray: string[]
+  private allSubscribed: Promise<number[]>
+  private listening: boolean
+  private pubsub: PubSubEngine
 
   constructor(pubsub: PubSubEngine, eventNames: string | string[]) {
-    this.pubsub = pubsub;
-    this.pullQueue = [];
-    this.pushQueue = [];
-    this.listening = true;
-    this.eventsArray = typeof eventNames === 'string' ? [eventNames] : eventNames;
-    this.allSubscribed = this.subscribeAll();
+    this.pubsub = pubsub
+    this.pullQueue = []
+    this.pushQueue = []
+    this.listening = true
+    this.eventsArray = typeof eventNames === 'string' ? [eventNames] : eventNames
+    this.allSubscribed = this.subscribeAll()
   }
 
   public async next() {
-    await this.allSubscribed;
-    return this.listening ? this.pullValue() : this.return();
+    await this.allSubscribed
+    return this.listening ? this.pullValue() : this.return()
   }
 
   public async return(): Promise<IteratorResult<any>> {
-    this.emptyQueue(await this.allSubscribed);
-    return { value: undefined, done: true };
+    this.emptyQueue(await this.allSubscribed)
+    return { value: undefined, done: true }
   }
 
   public async throw(err: any) {
-    this.emptyQueue(await this.allSubscribed);
-    return Promise.reject(err);
+    this.emptyQueue(await this.allSubscribed)
+    return Promise.reject(err)
   }
 
   public [$$asyncIterator]() {
-    return this;
+    return this
   }
 
   private async pushValue(event: any) {
-    await this.allSubscribed;
+    await this.allSubscribed
     if (this.pullQueue.length !== 0) {
-      let element = this.pullQueue.shift();
+      const element = this.pullQueue.shift()
       if (element) {
-        element({ value: event, done: false });
+        element({ value: event, done: false })
       }
     } else {
-      this.pushQueue.push(event);
+      this.pushQueue.push(event)
     }
   }
 
   private pullValue(): Promise<IteratorResult<any>> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this.pushQueue.length !== 0) {
-        resolve({ value: this.pushQueue.shift(), done: false });
+        resolve({ value: this.pushQueue.shift(), done: false })
       } else {
-        this.pullQueue.push(resolve);
+        this.pullQueue.push(resolve)
       }
-    });
+    })
   }
 
   private emptyQueue(subscriptionIds: number[]) {
     if (this.listening) {
-      this.listening = false;
-      this.unsubscribeAll(subscriptionIds);
-      this.pullQueue.forEach(resolve => resolve({ value: undefined, done: true }));
-      this.pullQueue.length = 0;
-      this.pushQueue.length = 0;
+      this.listening = false
+      this.unsubscribeAll(subscriptionIds)
+      this.pullQueue.forEach((resolve) => resolve({ value: undefined, done: true }))
+      this.pullQueue.length = 0
+      this.pushQueue.length = 0
     }
   }
 
   private subscribeAll() {
-    return Promise.all(this.eventsArray.map(
-      eventName => this.pubsub.subscribe(eventName, this.pushValue.bind(this), {})
-    ));
+    return Promise.all(
+      this.eventsArray.map((eventName) => this.pubsub.subscribe(eventName, this.pushValue.bind(this), {})),
+    )
   }
 
   private unsubscribeAll(subscriptionIds: number[]) {
     for (const subscriptionId of subscriptionIds) {
-      this.pubsub.unsubscribe(subscriptionId);
+      this.pubsub.unsubscribe(subscriptionId)
     }
   }
-
 }

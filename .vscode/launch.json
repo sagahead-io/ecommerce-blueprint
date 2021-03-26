@@ -1,45 +1,32 @@
 {
   "version": "0.2.0",
   "configurations": [
-     // Libs debugging configuration
+     // Commons debugging configuration
      {
-      "type": "pwa-node",
-      "request": "launch",
-      "name": "libs: graphql-snssqs-subscriptions integration",
-      "runtimeArgs": [
-        "jest",
-        "--config",
-        "${workspaceFolder}/libs/graphql-snssqs-subscriptions/jest.config.integration.js"
-      ],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/libs/graphql-snssqs-subscriptions"
+        "type": "pwa-node",
+        "request": "launch",
+        "name": "libs: amqp-bus integration",
+        "runtimeArgs": [
+          "jest",
+          "--config",
+          "${workspaceFolder}/commons/amqp-bus/jest.config.integration.js"
+        ],
+        "runtimeExecutable": "yarn",
+        "skipFiles": ["<node_internals>/**", "node_modules/**"],
+        "cwd": "${workspaceFolder}/commons/amqp-bus"
     },
-     {
-      "type": "pwa-node",
-      "request": "launch",
-      "name": "libs: graphql-snssqs-subscriptions test",
-      "runtimeArgs": [
-        "jest",
-        "--config",
-        "${workspaceFolder}/libs/graphql-snssqs-subscriptions/jest.config.js"
-      ],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/libs/graphql-snssqs-subscriptions"
-    },
-     {
+    {
       "type": "pwa-node",
       "request": "launch",
       "name": "libs: integrate-auth0 test",
       "runtimeArgs": [
         "jest",
         "--config",
-        "${workspaceFolder}/libs/integrate-auth0/jest.config.js"
+        "${workspaceFolder}/commons/integrate-auth0/jest.config.js"
       ],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/libs/integrate-auth0"
+      "cwd": "${workspaceFolder}/commons/integrate-auth0"
     },
     {
       "type": "pwa-node",
@@ -48,11 +35,11 @@
       "runtimeArgs": [
         "jest",
         "--config",
-        "${workspaceFolder}/libs/logger/jest.config.js"
+        "${workspaceFolder}/commons/logger/jest.config.js"
       ],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/libs/logger"
+      "cwd": "${workspaceFolder}/commons/logger"
     },
     {
       "type": "pwa-node",
@@ -61,11 +48,11 @@
       "runtimeArgs": [
         "jest",
         "--config",
-        "${workspaceFolder}/libs/build-federated-schema/jest.config.js"
+        "${workspaceFolder}/commons/build-federated-schema/jest.config.js"
       ],
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**", "node_modules/**"],
-      "cwd": "${workspaceFolder}/libs/build-federated-schema"
+      "cwd": "${workspaceFolder}/commons/build-federated-schema"
     },
     // Service auth debugging configuration
     {

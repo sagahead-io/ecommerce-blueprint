@@ -1,2 +1,4 @@
 .pnp.js
 **/bundle/*
+**/dist/*
+**/*.js

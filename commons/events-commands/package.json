@@ -8,7 +8,8 @@
   "scripts": {
     "commons-build-watch": "rm -rf dist/ && tsc --build -w",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "test:integration": "echo exit 0;"
   },
   "keywords": [
     "sagahead",

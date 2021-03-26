@@ -9,7 +9,7 @@ import {
   HANDLE_CHECKER,
   HandleChecker,
   TestFailMessageHandler,
-  TestFailMessage
+  TestFailMessage,
 } from '../test'
 import { BUS_RABBITMQ_INTERNAL_SYMBOLS, BUS_RABBITMQ_SYMBOLS } from './bus-rabbitmq-symbols'
 import { Connection, Channel, Message as RabbitMqMessage, ConsumeMessage } from 'amqplib'
@@ -21,14 +21,14 @@ import { TestSystemMessage } from '../test/test-system-message'
 import { TestSystemMessageHandler } from '../test/test-system-message-handler'
 import { Mock, IMock, It, Times } from 'typemoq'
 
-export async function sleep (timeoutMs: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, timeoutMs))
+export async function sleep(timeoutMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeoutMs))
 }
 
 const configuration: RabbitMqTransportConfiguration = {
   queueName: 'node-ts/bus-rabbitmq-test',
   connectionString: 'amqp://guest:guest@0.0.0.0',
-  maxRetries: 3
+  maxRetries: 3,
 }
 
 describe('RabbitMqTransport', () => {
@@ -41,6 +41,11 @@ describe('RabbitMqTransport', () => {
   let handleChecker: IMock<HandleChecker>
 
   beforeAll(async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => jest.fn())
+    jest.spyOn(console, 'info').mockImplementation(() => jest.fn())
+    jest.spyOn(console, 'debug').mockImplementation(() => jest.fn())
+    jest.spyOn(console, 'error').mockImplementation(() => jest.fn())
+
     handleChecker = Mock.ofType<HandleChecker>()
     container = new TestContainer()
     container.bind(HANDLE_CHECKER).toConstantValue(handleChecker.object)
@@ -70,7 +75,6 @@ describe('RabbitMqTransport', () => {
   })
 
   describe('when initializing the transport', () => {
-
     it('should create a service queue in rabbitmq', async () => {
       const queue = await channel.checkQueue(configuration.queueName)
       expect(queue).toBeDefined()
@@ -94,28 +98,36 @@ describe('RabbitMqTransport', () => {
       beforeAll(async () => {
         jest.setTimeout(10000)
         await bus.publish(poisonedMessage)
-        await new Promise<void>(resolve => {
+        await new Promise<void>((resolve) => {
           const consumerTag = faker.random.uuid()
-          channel.consume('dead-letter', msg => {
-            if (!msg) {
-              return
-            }
+          channel.consume(
+            'dead-letter',
+            (msg) => {
+              if (!msg) {
+                return
+              }
 
-            channel.ack(msg)
-            channel.cancel(consumerTag)
+              channel.ack(msg)
+              channel.cancel(consumerTag)
 
-            const message = JSON.parse(msg.content.toString()) as TestPoisonedMessage
-            if (message.id === poisonedMessage.id) {
-              resolve()
-            }
-          }, { consumerTag})
+              const message = JSON.parse(msg.content.toString()) as TestPoisonedMessage
+              if (message.id === poisonedMessage.id) {
+                resolve()
+              }
+            },
+            { consumerTag },
+          )
         })
       })
 
       it(`it should fail after configuration.maxRetries attempts`, () => {
         handleChecker.verify(
-          h => h.check(It.is<TestPoisonedMessage>(m => m.id === poisonedMessage.id), It.isAny()),
-          Times.exactly(configuration.maxRetries!)
+          (h) =>
+            h.check(
+              It.is<TestPoisonedMessage>((m) => m.id === poisonedMessage.id),
+              It.isAny(),
+            ),
+          Times.exactly(configuration.maxRetries!),
         )
       })
     })
@@ -152,8 +164,12 @@ describe('RabbitMqTransport', () => {
 
       it('should handle system messages', async () => {
         handleChecker.verify(
-          h => h.check(It.is<TestSystemMessage>(m => m.name === command.name), It.isAny()),
-          Times.once()
+          (h) =>
+            h.check(
+              It.is<TestSystemMessage>((m) => m.name === command.name),
+              It.isAny(),
+            ),
+          Times.once(),
         )
       })
     })
@@ -166,12 +182,12 @@ describe('RabbitMqTransport', () => {
           correlationId: faker.random.uuid(),
           attributes: {
             attribute1: 'a',
-            attribute2: 1
+            attribute2: 1,
           },
           stickyAttributes: {
             attribute1: 'b',
-            attribute2: 2
-          }
+            attribute2: 2,
+          },
         })
 
         beforeEach(async () => {
@@ -198,7 +214,7 @@ describe('RabbitMqTransport', () => {
         })
 
         it('should should not ack the message from the queue', async () => {
-          const queueDetails = await channel.checkQueue(configuration.queueName) as { messageCount: number }
+          const queueDetails = (await channel.checkQueue(configuration.queueName)) as { messageCount: number }
           expect(queueDetails.messageCount).toEqual(0)
         })
       })
@@ -212,11 +228,11 @@ describe('RabbitMqTransport', () => {
 
       beforeAll(async () => {
         await bus.publish(failMessage, new MessageAttributes({ correlationId }))
-        await new Promise<void>(resolve => {
+        await new Promise<void>((resolve) => {
           const consumerTag = faker.random.uuid()
           channel.consume(
             'dead-letter',
-            msg => {
+            (msg) => {
               if (!msg) {
                 return
               }
@@ -231,7 +247,8 @@ describe('RabbitMqTransport', () => {
                 resolve()
               }
             },
-            { consumerTag })
+            { consumerTag },
+          )
         })
       })
 
@@ -240,7 +257,7 @@ describe('RabbitMqTransport', () => {
       })
 
       it('should remove the message from the source queue', async () => {
-        const queueDetails = await channel.checkQueue(configuration.queueName) as { messageCount: number }
+        const queueDetails = (await channel.checkQueue(configuration.queueName)) as { messageCount: number }
         expect(queueDetails.messageCount).toEqual(0)
       })
 
@@ -248,6 +265,5 @@ describe('RabbitMqTransport', () => {
         expect(rawDeadLetter.properties.correlationId).toEqual(correlationId)
       })
     })
-
   })
 })

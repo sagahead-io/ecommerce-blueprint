@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
+    "test:integration": "echo exit 0;",
     "start": "tsc-watch --onSuccess \"node dist/index.js\"",
     "start:prod": "node -r dist/index.js"
   },

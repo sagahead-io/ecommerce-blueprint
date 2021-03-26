@@ -1,8 +1,10 @@
-module.exports = Object.assign({}, require(`../../jest.config.js`), {
-  modulePathIgnorePatterns: [],
-  globals: {
-    'ts-jest': {
-      tsconfig: './tsconfig.json',
-    },
-  }
-});
+const base = require('../../jest.config.base.js');
+const pack = require('./package');
+const packageName = pack.name;
+
+module.exports = {
+  ...base,
+  name: packageName,
+  displayName: packageName,
+  modulePathIgnorePatterns: ['dist']
+};

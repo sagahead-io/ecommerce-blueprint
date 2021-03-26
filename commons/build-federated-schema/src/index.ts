@@ -57,7 +57,7 @@ export interface SchemaOptions {
   resolvers: GraphQLResolverMap
 }
 
-export interface GraphQLResolverMap<TContext = {}> {
+export interface GraphQLResolverMap<TContext = unknown> {
   [typeName: string]:
     | {
         [fieldName: string]:

@@ -1,5 +1,5 @@
 require('dotenv').config();
-module.exports = Object.assign({}, require(`../../jest.config.js`), {
+module.exports = Object.assign({}, require('../../jest.config.base.js'), {
   modulePathIgnorePatterns: [],
   moduleFileExtensions: ["ts", "js", "json"],
   globals: {
@@ -7,5 +7,6 @@ module.exports = Object.assign({}, require(`../../jest.config.js`), {
       tsconfig: './tsconfig.json',
     },
   },
-  testRegex: "\\.integration\\.ts$"
+  testRegex: "\\.integration\\.ts$",
+  modulePathIgnorePatterns: ['dist']
 });

@@ -7,24 +7,19 @@ import { RabbitMqTransportConfiguration } from './rabbitmq-transport-configurati
 import { BUS_SYMBOLS, Transport } from '@node-ts/bus-core'
 
 export class BusRabbitMqModule extends ContainerModule {
-  constructor () {
-    super (async (bind, _, __, rebind) => {
-      bind(BUS_RABBITMQ_INTERNAL_SYMBOLS.RabbitMqTransport)
-        .to(RabbitMqTransport)
-        .inSingletonScope()
+  constructor() {
+    super(async (bind, _, __, rebind) => {
+      bind(BUS_RABBITMQ_INTERNAL_SYMBOLS.RabbitMqTransport).to(RabbitMqTransport).inSingletonScope()
       bindLogger(bind, RabbitMqTransport)
 
-      rebind<Transport<{}>>(BUS_SYMBOLS.Transport)
-        .to(RabbitMqTransport)
-        .inSingletonScope()
+      rebind<Transport<unknown>>(BUS_SYMBOLS.Transport).to(RabbitMqTransport).inSingletonScope()
 
-      bind(BUS_RABBITMQ_INTERNAL_SYMBOLS.AmqpFactory)
-        .toFactory(c => async () => {
-          const configuration = c.container
-            .get<RabbitMqTransportConfiguration>(BUS_RABBITMQ_SYMBOLS.TransportConfiguration)
-          return connect(configuration.connectionString)
-        })
-
+      bind(BUS_RABBITMQ_INTERNAL_SYMBOLS.AmqpFactory).toFactory((c) => async () => {
+        const configuration = c.container.get<RabbitMqTransportConfiguration>(
+          BUS_RABBITMQ_SYMBOLS.TransportConfiguration,
+        )
+        return connect(configuration.connectionString)
+      })
     })
   }
 }

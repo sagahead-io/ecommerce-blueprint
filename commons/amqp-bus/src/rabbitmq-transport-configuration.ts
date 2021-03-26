@@ -10,6 +10,8 @@ export interface RabbitMqTransportConfiguration {
 
   exchangeType?: string
 
+  withRoutingKeys?: boolean
+
   /**
    * The amqp connection string to use to connect to the rabbit mq instance
    * @example amqp://guest:guest@localhost
