@@ -1,12 +1,12 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "jest"],
+  plugins: ["@typescript-eslint"],
   extends: [
-    "plugin:react/recommended",
+    // "plugin:react/recommended",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
+    "prettier/@typescript-eslint"
   ],
   parserOptions: {
     ecmaVersion: 2020,
@@ -38,9 +38,10 @@ module.exports = {
       version: "latest",
     },
   },
-  "ignorePatterns": [
+  ignorePatterns: [
     ".yarn/*",
     "**/node_modules/**",
-    ".pnp.js"
+    ".pnp.js",
+    "**/dist/*.js"
   ]
 };

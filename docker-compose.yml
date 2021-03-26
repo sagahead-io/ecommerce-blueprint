@@ -23,15 +23,22 @@ services:
       - AWS_EXECUTION_ENV=True
     volumes:
       - './tmp/localstack:/tmp/localstack'
-  mgmt.mcld.redis:
+  ecomm.redis:
     image: redis
     command: redis-server --requirepass password
     ports:
       - '6379:6379'
     volumes:
       - './tmp/cache:/var/lib/redis'
-  mgmt.mcld.adminer:
+  ecomm.adminer:
     image: adminer
     restart: always
     ports:
       - '50001:8080'
+  ecomm.amqp:
+    image: rabbitmq:3-management
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    environment:
+          - HOSTNAME=rabbitmq 

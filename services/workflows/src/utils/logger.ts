@@ -1,4 +1,4 @@
-import { BuildLogger } from '@libs/logger'
+import { BuildLogger } from '@commons/logger'
 import env from './env'
 
 export default BuildLogger({

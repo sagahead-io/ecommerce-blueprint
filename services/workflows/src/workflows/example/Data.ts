@@ -1,9 +1,14 @@
 import { WorkflowData } from '@node-ts/bus-workflow'
-import { Uuid } from '../../configs/types'
-import env from '../../utils/env'
 
 export class ExampleWorkflowData extends WorkflowData {
-  readonly $name = `${env.SERVICE}/example-workflow-data`
+  readonly $name = `ExampleWorkflowData`
 
-  correlationId!: Uuid
+  correlationId: string
+  message: string
+
+  constructor(message: string, correlationId: string) {
+    super()
+    this.message = message
+    this.correlationId = correlationId
+  }
 }

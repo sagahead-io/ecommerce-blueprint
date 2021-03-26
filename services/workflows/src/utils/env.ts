@@ -24,6 +24,7 @@ process.env.AWS_ACCOUNT_ID = AWS_ACCOUNT_ID || '000000000000'
 export default {
   PORT: PORT || 8092,
   SERVICE: SERVICE || 'workflows',
+  SERVICE_EXCHANGE: `@services/${SERVICE || 'workflows'}`,
   SERVICE_DEVELOPMENT: process.env.NODE_ENV === 'development',
 
   // aws
