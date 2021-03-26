@@ -1,13 +1,9 @@
 import { Event } from '@node-ts/bus-messages'
 import { Command } from '@node-ts/bus-messages'
 
-export enum WORKFLOWS_ROUTING_KEYS {
-  order = `@services/workflows/order`,
-  example = `@services/workflows/example`,
-}
-
 export class OrderSomething extends Command {
-  readonly $name = WORKFLOWS_ROUTING_KEYS.order
+  static NAME = '@services/workflows/order'
+  readonly $name = OrderSomething.NAME
   readonly $version = 1
 
   message: string
@@ -19,7 +15,8 @@ export class OrderSomething extends Command {
 }
 
 export class StartExampleWorkflow extends Event {
-  readonly $name = WORKFLOWS_ROUTING_KEYS.example
+  static NAME = '@services/workflows/example'
+  readonly $name = OrderSomething.NAME
   readonly $version = 1
 
   message: string

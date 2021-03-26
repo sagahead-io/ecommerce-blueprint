@@ -31,8 +31,8 @@ export class ExampleWorkflow extends Workflow<ExampleWorkflowData> {
 
     const { message } = event
 
-    const reply = `Message that was received test from WorkflowsExampleEvent was ${message}`
-    await sleep(10000)
+    const reply = `Message that was received test from WorkflowsExampleEvent was ${message} with ${correlationId}`
+    await sleep(2000)
     this.bus.publish(new AuthSubscribeEvents(reply))
 
     return {
