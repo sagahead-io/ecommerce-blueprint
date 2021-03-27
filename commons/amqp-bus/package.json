@@ -6,9 +6,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "commons-build-watch": "rm -rf dist/ && tsc --build -w",
     "clean": "rm -rf dist",
-    "build": "tsc --project tsconfig.json --declaration",
+    "build": "npm-run-all clean build:source",
+    "build:source": "tsc --project tsconfig.json --declaration",
+    "build:commons": "npm-run-all build",
+    "build:watch": "npm-run-all clean watch",
+    "watch": "tsc --build -w",
     "test": "npm-run-all test:unit test:integration",
     "test:unit": "jest",
     "test:integration": "jest -c jest.config.integration.js"

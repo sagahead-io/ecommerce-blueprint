@@ -9,7 +9,7 @@ module.exports = {
   coveragePathIgnorePatterns: ['(.*.mock).(|ts?|tsx?)$'],
   globals: {
     'ts-jest': {
-      tsconfig: './tsconfig.base.json',
+      tsconfig: './tsconfig.json',
     },
   },
   transform: {

@@ -26,3 +26,4 @@ bundle*.zip
 coverage
 localstack
 yarn-error.log
+temp

@@ -1,5 +1,5 @@
 import { Resolver, Query, Ctx } from 'type-graphql'
-import { Hello } from '../entities/Hello'
+import { Hello } from '../test-entities/Hello'
 import { ContextType } from '../types/Context'
 
 @Resolver((_) => Hello)

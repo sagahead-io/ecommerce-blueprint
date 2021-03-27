@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import Fastify, { FastifyRequest } from 'fastify'
 import mercurius, { MercuriusCommonOptions } from 'mercurius'
-import buildFederatedSchema from '@commons/build-federated-schema'
+import buildFederatedSchema from './build-federated-schema'
 import { BuildSchemaOptions } from 'type-graphql'
 
 type ServerOptions = {

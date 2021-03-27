@@ -1,4 +1,4 @@
-import { setupAuth0Clients, installAuth0Apps, getInstallAuth0, installAuth0Roles } from '..'
+import { setupAuth0Clients, installAuth0Apps, getInstallAuth0, installAuth0Roles } from '../client'
 import { Auth0InstallAppResponse, Auth0InstallRulesAndRolesResponse } from '../types'
 
 const { DOMAIN, CLIENT_ID, CLIENT_SECRET, EMAIL } = process.env

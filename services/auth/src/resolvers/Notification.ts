@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Arg, Subscription, Root } from 'type-graphql'
-import { Notification, NotificationPayload } from '../entities/Notification'
+import { Notification, NotificationPayload } from '../test-entities/Notification'
 import {
   AuthSubscribeNotifications,
   AuthSubscribeNotifications2,

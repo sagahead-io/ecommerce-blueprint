@@ -6,10 +6,13 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "commons-build-watch": "rm -rf dist/ && tsc --build -w",
-    "build": "npm-run-all build:source build:files",
-    "build:source": "tsc",
+    "clean": "rm -rf dist",
+    "build": "npm-run-all clean build:source build:files",
+    "build:commons": "npm-run-all build",
+    "build:watch": "npm-run-all clean watch",
+    "build:source": "tsc --project tsconfig.json --declaration",
     "build:files": "ncp src/rules/files dist/rules/files",
+    "watch": "tsc --build -w",
     "test": "npm-run-all test:unit test:integration",
     "test:unit": "jest",
     "test:integration": "jest -c jest.config.integration.js"

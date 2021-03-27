@@ -5,14 +5,17 @@ export type Auth0InstallClient = {
   managementClient: auth0.ManagementClient
 }
 
-export type Auth0InstallAppOptions = {
-  admin_app_name?: string
-  web_app_name?: string
-  app_type?: 'spa' | 'native' | 'non_interactive' | 'regular_web'
+export type Auth0InstallAppCallbacks = {
   callbacks: string[] // e.g. ['http://localhost:3000', 'http://localhost:3000/login']
   allowed_logout_urls: string[] // e.g. ['http://localhost:3000', 'http://localhost:3000/logout']
   web_origins: string[] // e.g. ['http://localhost:3000']
   allowed_origins: string[] // e.g. ['http://localhost:3000']
+}
+
+export type Auth0InstallAppOptions = Auth0InstallAppCallbacks & {
+  admin_app_name?: string
+  web_app_name?: string
+  app_type?: 'spa' | 'native' | 'non_interactive' | 'regular_web'
   [propName: string]: any
 }
 
