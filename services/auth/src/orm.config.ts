@@ -3,9 +3,9 @@ import { TsMorphMetadataProvider } from '@mikro-orm/reflection'
 
 export default {
   metadataProvider: TsMorphMetadataProvider,
-  baseDir: __dirname + '/..',
+  // baseDir: __dirname + '/..',
   migrations: {
-    path: 'src/migrations',
+    path: './src/migrations',
     tableName: 'migrations',
     transactional: true,
   },

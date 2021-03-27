@@ -8,8 +8,9 @@ export async function openConnection(): Promise<OrmConnectionType> {
 
   try {
     orm = await MikroORM.init(ormConfig)
-    const migrator = this.orm.getMigrator()
+    const migrator = orm.getMigrator()
     const migrations = await migrator.getPendingMigrations()
+    console.log(migrations)
     if (migrations && migrations.length > 0) {
       await migrator.up()
     }
