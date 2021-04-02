@@ -164,13 +164,16 @@ export const installAuth0Apps = async (appOptions: Auth0InstallAppOptions): Prom
       app_type: appOptions.app_type || 'spa',
     })
 
-    const adminAppConn = await installAuth0.managementClient.createConnection({
-      name: 'Admin-Password-Authentication',
-      strategy: 'auth0',
-    })
-
     const webAppConns = await installAuth0.managementClient.getConnections()
+    let adminAppConn = webAppConns.find((connection) => connection.name === 'Admin-Password-Authentication')
     let webAppConn = webAppConns.find((connection) => connection.name === 'Username-Password-Authentication')
+
+    if (!adminAppConn) {
+      adminAppConn = await installAuth0.managementClient.createConnection({
+        name: 'Admin-Password-Authentication',
+        strategy: 'auth0',
+      })
+    }
 
     if (!webAppConn) {
       webAppConn = await installAuth0.managementClient.createConnection({
@@ -217,6 +220,82 @@ export const installAuth0Roles = async (adminEmails: string[]): Promise<Auth0Ins
       roles,
       rules: [createdUserRoleRule, createdLinkUserAccRule],
     }
+  } catch (e) {
+    throw new Error(`Failed in setup auth0 roles ${e}`)
+  }
+}
+
+export const uninstallAuth0Apps = async (appOptions: Auth0InstallAppOptions): Promise<boolean> => {
+  try {
+    const sleep = (ms) => {
+      return new Promise((resolve) => setTimeout(resolve, Math.random() * ms))
+    }
+
+    const allApps = await installAuth0.managementClient.getClients()
+    const adminApp = allApps.find((client) => client.name === (appOptions.admin_app_name || 'Admin App'))
+
+    if (adminApp?.client_id) {
+      await sleep(1000)
+      await installAuth0.managementClient.deleteClient({ client_id: adminApp.client_id })
+    }
+
+    const webApp = allApps.find((client) => client.name === (appOptions.web_app_name || 'Web App'))
+
+    if (webApp?.client_id) {
+      await sleep(1000)
+      await installAuth0.managementClient.deleteClient({ client_id: webApp.client_id })
+    }
+
+    const webAppConns = await installAuth0.managementClient.getConnections()
+    const adminAppConn = webAppConns.find((connection) => connection.name === 'Admin-Password-Authentication')
+
+    if (adminAppConn && adminAppConn.id) {
+      await sleep(1000)
+      await installAuth0.managementClient.deleteConnection({ id: adminAppConn.id })
+    }
+
+    const webAppConn = webAppConns.find((connection) => connection.name === 'Username-Password-Authentication')
+
+    if (webAppConn && webAppConn.id) {
+      await sleep(1000)
+      await installAuth0.managementClient.deleteConnection({ id: webAppConn.id })
+    }
+
+    return true
+  } catch (e) {
+    throw new Error(`Failed to cleanup auth0 apps ${e}`)
+  }
+}
+
+export const uninstallAuth0Roles = async (): Promise<boolean> => {
+  try {
+    const userRoles: auth0.Role[] = options.userRoles || [
+      { name: 'user', description: 'App user role' },
+      { name: 'admin', description: 'Admin user role' },
+    ]
+
+    const roles = await installAuth0.managementClient.getRoles()
+
+    await Promise.all(
+      userRoles.map(async (role) => {
+        const mappedRole = roles.find((retrievedRole) => retrievedRole.name === role.name)
+        if (mappedRole && mappedRole.id) {
+          await installAuth0.managementClient.deleteRole({ id: mappedRole?.id })
+        }
+      }),
+    )
+
+    const rules = await installAuth0.managementClient.getRules()
+
+    await Promise.all(
+      rules.map(async (rule) => {
+        if (rule && rule.id) {
+          await installAuth0.managementClient.deleteRule({ id: rule.id })
+        }
+      }),
+    )
+
+    return true
   } catch (e) {
     throw new Error(`Failed in setup auth0 roles ${e}`)
   }

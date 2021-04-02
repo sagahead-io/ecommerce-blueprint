@@ -14,6 +14,7 @@ const {
   AUTH0_FRONTEND_URL,
   AUTH0_LOGIN_ENDPOINT,
   AUTH0_LOGOUT_ENDPOINT,
+  AMQP_CONNECTION_STR,
 } = process.env
 
 export default {
@@ -26,6 +27,7 @@ export default {
   AUTH0_SECRET: assertedVar(AUTH0_SECRET),
   AUTH0_DOMAIN: assertedVar(AUTH0_DOMAIN),
   AUTH0_ADMINS: envToArray(assertedVar(AUTH0_ADMINS)),
+  AUTH0_CONNECTION: 'Username-Password-Authentication',
   AUTH0_FRONTEND_URL: AUTH0_FRONTEND_URL || 'http://localhost:3000',
   AUTH0_LOGIN_ENDPOINT: unslash(AUTH0_LOGIN_ENDPOINT) || 'login',
   AUTH0_LOGOUT_ENDPOINT: unslash(AUTH0_LOGOUT_ENDPOINT) || 'logout',
@@ -35,4 +37,6 @@ export default {
     web_origins: [`${AUTH0_FRONTEND_URL}`],
     allowed_origins: [`${AUTH0_FRONTEND_URL}`],
   } as Auth0InstallAppCallbacks,
+
+  AMQP_CONNECTION_STR: AMQP_CONNECTION_STR || 'amqp://guest:guest@localhost:5672?heartbeat=30',
 }

@@ -1,6 +1,12 @@
 import { Migration } from '@mikro-orm/migrations'
 import env from '../utils/env'
-import { setupAuth0Clients, installAuth0Apps, installAuth0Roles } from '@commons/integrate-auth0'
+import {
+  setupAuth0Clients,
+  installAuth0Apps,
+  installAuth0Roles,
+  uninstallAuth0Roles,
+  uninstallAuth0Apps,
+} from '@commons/integrate-auth0'
 
 export class Migration20210327090939 extends Migration {
   async up(): Promise<void> {
@@ -21,5 +27,13 @@ export class Migration20210327090939 extends Migration {
   async down(): Promise<void> {
     this.addSql(`alter table "account" drop constraint "account_pkey"`)
     this.addSql(`drop table "account"`)
+
+    await setupAuth0Clients({
+      clientId: env.AUTH0_CLIENT,
+      clientSecret: env.AUTH0_SECRET,
+      domain: env.AUTH0_DOMAIN,
+    })
+    await uninstallAuth0Apps(env.AUTH0_CALLBACKS)
+    await uninstallAuth0Roles()
   }
 }
