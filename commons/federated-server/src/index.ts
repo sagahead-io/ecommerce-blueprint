@@ -19,9 +19,10 @@ export const bootstrapFederatedServer = async ({ schemaOpts, adapterOpts, server
 
   try {
     const fastify = Fastify()
-    const schema = await buildFederatedSchema(schemaOpts)
+    const { schema, resolvers } = await buildFederatedSchema(schemaOpts)
     const composedServerOptions = {
-      ...schema,
+      schema,
+      resolvers,
       context: (request: FastifyRequest) => ({
         ...request,
       }),

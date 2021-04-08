@@ -5,6 +5,7 @@ import {
   installAuth0Roles,
   uninstallAuth0Apps,
   uninstallAuth0Roles,
+  getAuth0ManagementApi,
 } from '../client'
 import { Auth0InstallAppResponse, Auth0InstallRulesAndRolesResponse } from '../types'
 
@@ -13,34 +14,7 @@ const { DOMAIN, CLIENT_ID, CLIENT_SECRET, EMAIL } = process.env
 let installAuth0AppResult: Auth0InstallAppResponse
 let installAuth0RulesResult: Auth0InstallRulesAndRolesResponse
 
-// const sleep = (ms) => {
-//   return new Promise((resolve) => setTimeout(resolve, Math.random() * ms))
-// }
-
-// const cleanupAuth0 = async () => {
-//   const installAuth = getInstallAuth0()
-
-//   await installAuth.managementClient.deleteClient({ client_id: installAuth0AppResult.adminAppClientId })
-//   await sleep(2000)
-//   await installAuth.managementClient.deleteClient({ client_id: installAuth0AppResult.webAppClientId })
-//   await sleep(2000)
-//   await installAuth.managementClient.deleteConnection({ id: installAuth0AppResult.adminAppConnId })
-//   await sleep(2000)
-//   //await installAuth.managementClient.deleteConnection({ id: installAuth0AppResult.webAppConnId }) usually this connection available by default
-//   installAuth0RulesResult.rules.map(async (rule) => {
-//     await installAuth.managementClient.deleteRule({ id: rule.id || '' })
-//   })
-//   await sleep(2000)
-//   installAuth0RulesResult.roles.map(async (role) => {
-//     await installAuth.managementClient.deleteRole({ id: role.id || '' })
-//   })
-// }
-
 describe('Integration test', () => {
-  // afterAll(() => {
-  //   return cleanupAuth0()
-  // })
-
   const appsConf = {
     callbacks: ['http://localhost:3000', 'http://localhost:3000/login'],
     allowed_logout_urls: ['http://localhost:3000', 'http://localhost:3000/logout'],
@@ -48,6 +22,10 @@ describe('Integration test', () => {
     allowed_origins: ['http://localhost:3000'],
     admin_app_name: 'integration-test-admin-app',
     web_app_name: 'integration-test-web-app',
+    oidc_conformant: true,
+    jwt_configuration: {
+      alg: 'RS256',
+    },
   }
   it('setup required clients', async () => {
     const result = await setupAuth0Clients({
@@ -61,11 +39,15 @@ describe('Integration test', () => {
 
   it('installs an app', async () => {
     installAuth0AppResult = await installAuth0Apps(appsConf)
+    const mgmt = await getAuth0ManagementApi()
+    const app = await mgmt.getClient({ client_id: installAuth0AppResult.webAppClientId })
 
-    expect(installAuth0AppResult.webAppConnId).toBeDefined()
-    expect(installAuth0AppResult.adminAppConnId).toBeDefined()
-    expect(installAuth0AppResult.webAppClientId).toBeDefined()
-    expect(installAuth0AppResult.adminAppClientId).toBeDefined()
+    expect(app.callbacks).toEqual(appsConf.callbacks)
+    expect(app.allowed_logout_urls).toEqual(appsConf.allowed_logout_urls)
+    expect(app.web_origins).toEqual(appsConf.web_origins)
+    expect(app.allowed_origins).toEqual(appsConf.allowed_origins)
+    expect(app.oidc_conformant).toBeTruthy()
+    expect(app.jwt_configuration?.alg).toEqual(appsConf.jwt_configuration.alg)
   })
 
   it('installs roles and rules', async () => {

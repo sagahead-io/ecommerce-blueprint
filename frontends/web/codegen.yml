@@ -1,0 +1,20 @@
+schema: ./__api__/schema.gql
+documents: './src/**/*.{tsx,ts}'
+overwrite: true
+
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+
+generates:
+  src/gql/schema.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+      - mercurius-codegen
+      - typescript-react-apollo
+    config:
+      withHOC: false
+      withHooks: true
+      withComponent: false

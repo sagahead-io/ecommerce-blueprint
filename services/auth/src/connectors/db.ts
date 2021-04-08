@@ -1,7 +1,8 @@
-import { Connection, IDatabaseDriver, MikroORM } from '@mikro-orm/core'
+import { Connection, IDatabaseDriver, MikroORM, EntityManager } from '@mikro-orm/core'
 import ormConfig from '../orm.config'
 
 export type OrmConnectionType = MikroORM<IDatabaseDriver<Connection>>
+export type EntityManagerType = EntityManager<IDatabaseDriver<Connection>>
 
 export async function openConnection(): Promise<OrmConnectionType> {
   let orm: OrmConnectionType

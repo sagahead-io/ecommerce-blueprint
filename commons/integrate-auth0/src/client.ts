@@ -93,7 +93,7 @@ const setupAuth0RulesEnvVariables = async (): Promise<void> => {
   }
 }
 
-const getAuth0ManagementApi = (): Promise<auth0.ManagementClient> => {
+export const getAuth0ManagementApi = (): Promise<auth0.ManagementClient> => {
   return new Promise((resolve, reject) => {
     const scope = options.scope || undefined
     const audience = options.audience || `https://${options.domain}/api/v2/`
@@ -154,13 +154,17 @@ export const setupAuth0Clients = async (installOptions: Auth0InstallClientOption
 
 export const installAuth0Apps = async (appOptions: Auth0InstallAppOptions): Promise<Auth0InstallAppResponse> => {
   try {
+    const { admin_app_name, web_app_name, ...rest } = appOptions
+    const options = { ...rest }
     const adminApp = await installAuth0.managementClient.createClient({
-      name: appOptions.admin_app_name || 'Admin App',
+      ...options,
+      name: admin_app_name || 'Admin App',
       app_type: appOptions.app_type || 'spa',
     })
 
     const webApp = await installAuth0.managementClient.createClient({
-      name: appOptions.web_app_name || 'Web App',
+      ...options,
+      name: web_app_name || 'Web App',
       app_type: appOptions.app_type || 'spa',
     })
 

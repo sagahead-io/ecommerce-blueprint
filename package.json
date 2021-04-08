@@ -5,8 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint -tvpi -j 8 run start",
+    "start": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint --exclude '@frontends/*' --exclude '@commons/*' -tvpi -j 8 run start",
     "start:commons": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint --exclude '@frontends/*' --exclude '@services/*' -tvpi -j 8 run build:watch",
+    "start:frontends": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint --exclude '@services/*' --exclude '@commons/*'  -tvpi -j 8 run start",
     "build": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint -tv run build",
     "build:commons": "yarn workspaces foreach --exclude sagahead-ecommerce-blueprint --exclude '@frontends/*' --exclude '@services/*' -tv run build:commons",
     "test": "npm-run-all test:unit test:integration",

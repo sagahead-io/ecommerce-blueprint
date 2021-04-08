@@ -71,19 +71,21 @@ export interface GraphQLResolverMap<TContext = unknown> {
 export default async function buildFederatedSchema(
   options: Omit<BuildSchemaOptions, 'skipCheck'>,
 ): Promise<SchemaOptions> {
-  const schema = await buildSchema({
+  const schemaObject = await buildSchema({
     ...options,
     skipCheck: true,
     directives: [...specifiedDirectives, ...federationDirectives, ...(options.directives || [])],
   })
 
-  const modifiedSchema = printSchema(schema)
+  const schema = printSchema(schemaObject)
     .replace('type Query {', 'type Query @extends {')
     .replace('type Mutation {', 'type Mutation @extends {')
     .replace('type Subscription {', 'type Subscription @extends {')
 
+  const resolvers = createResolversMap(schemaObject) as GraphQLResolverMap
+
   return {
-    schema: modifiedSchema,
-    resolvers: createResolversMap(schema) as GraphQLResolverMap,
+    schema,
+    resolvers,
   }
 }

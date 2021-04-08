@@ -6,22 +6,42 @@ import env from './utils/env'
 import logger from './utils/logger'
 import { initPubSub } from './connectors/pubsub'
 import * as db from './connectors/db'
-export type ServiceContext = FastifyRequest
+import { authGuard, AuthGuardContext } from '@commons/utils'
+import { LoginResolver } from './resolvers/login.resolver'
+import { Auth0ManagementClientType } from '@commons/integrate-auth0'
+import { initAuth0 } from './connectors/auth0'
+import { LoginChallengeResolver } from './resolvers/login-challenge.resolver'
+import { Account } from './entities/account.entity'
+import { MeResolver } from './resolvers/me.resolver'
+
+export type ServiceContext = FastifyRequest &
+  AuthGuardContext & {
+    em: db.EntityManagerType
+    auth0Management: Auth0ManagementClientType
+    logger: typeof logger
+  }
 
 const start = async () => {
   try {
-    await db.openConnection()
+    const orm = await db.openConnection()
     const pubSub = await initPubSub()
+    const auth0 = await initAuth0()
+    const authChecker = await authGuard<ServiceContext>()
     const result = await bootstrapFederatedServer({
       schemaOpts: {
-        resolvers: [HelloResolver, NotificationResolver],
+        authChecker,
+        resolvers: [HelloResolver, NotificationResolver, LoginResolver, LoginChallengeResolver, MeResolver],
         pubSub,
+        orphanedTypes: [Account],
       },
       adapterOpts: {
-        graphiql: 'playground',
+        graphiql: env.SERVICE_DEVELOPMENT ? 'playground' : false,
         context: (request: FastifyRequest) =>
           ({
             ...request,
+            em: orm.em.fork(),
+            auth0Management: auth0.managementClient,
+            logger,
           } as ServiceContext),
         subscription: {
           onConnect: (data) => {

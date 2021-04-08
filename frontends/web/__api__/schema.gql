@@ -1,0 +1,83 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+scalar _Any
+
+scalar _FieldSet
+
+type Mutation @extends {
+  addNotification(message: String): Boolean!
+  addEvent(message: String): Boolean!
+  login(input: LoginInput!): LoginResponse!
+  loginChallenge: LoginChallengeResponse!
+}
+
+type Query @extends {
+  hiFromAuth: Hello
+  testas: Hello
+  currentDate: DateTime!
+  me: AuthAccountInfo
+}
+
+type Subscription @extends {
+  subscribeNotifications: Notification!
+  subscribeNotifications2: Notification!
+  subscribeEvents: Notification!
+}
+
+type Account {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  auth0Id: String!
+  auth0Roles: [String!]
+}
+
+type AuthAccountInfo {
+  id: Float!
+  auth0Id: String!
+  roles: [String!]!
+  isAuthorized: Boolean!
+}
+
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
+type Hello {
+  id: ID!
+  text: String!
+}
+
+type LoginChallengeResponse {
+  verifier: String!
+  challenge: String!
+}
+
+input LoginInput {
+  accessToken: String = null
+}
+
+type LoginResponse {
+  loggedIn: Boolean!
+}
+
+type Notification {
+  id: ID!
+  message: String
+  date: DateTime!
+}
+
+directive @external on FIELD_DEFINITION
+
+directive @requires(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @provides(fields: _FieldSet!) on FIELD_DEFINITION
+
+directive @key(fields: _FieldSet!) on OBJECT | INTERFACE
+
+directive @extends on OBJECT | INTERFACE

@@ -39,3 +39,7 @@ export type Auth0InstallRulesAndRolesResponse = {
   rules: auth0.Rule[]
   roles: auth0.Role[]
 }
+
+export type Auth0ManagementClientType = auth0.ManagementClient
+
+export type Auth0User = auth0.User<auth0.AppMetadata, auth0.UserMetadata>

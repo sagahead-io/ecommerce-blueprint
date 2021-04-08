@@ -25,6 +25,7 @@
     "mercurius": "^7.1.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0",
     "uuid": "^8.3.2"
   },
   "scripts": {

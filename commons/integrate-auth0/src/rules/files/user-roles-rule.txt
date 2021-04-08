@@ -87,7 +87,7 @@ async function(user, context, callback) {
   //console.log(`${user.email} app_metadata`, user.app_metadata);
   
   try {
-    const body = { roles: [rolesMap[userRoles[0]]] };
+    const body = { roles: Object.values(rolesMap) };
     //console.log(`${user.email} roles assign req body`, body);
     await management.assignRolestoUser({ id: user.user_id }, body);
     await auth0.users.updateAppMetadata(user.user_id, user.app_metadata);

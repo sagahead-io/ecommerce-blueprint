@@ -1,13 +1,7 @@
 import { Migration } from '@mikro-orm/migrations'
+import { installAuth0Apps, installAuth0Roles, uninstallAuth0Roles, uninstallAuth0Apps } from '@commons/integrate-auth0'
+import { initAuth0 } from '../connectors/auth0'
 import env from '../utils/env'
-import {
-  setupAuth0Clients,
-  installAuth0Apps,
-  installAuth0Roles,
-  uninstallAuth0Roles,
-  uninstallAuth0Apps,
-} from '@commons/integrate-auth0'
-
 export class Migration20210327090939 extends Migration {
   async up(): Promise<void> {
     this.addSql(
@@ -15,12 +9,8 @@ export class Migration20210327090939 extends Migration {
     )
     this.addSql('alter table "account" add constraint "account_pkey" primary key ("id");')
 
-    await setupAuth0Clients({
-      clientId: env.AUTH0_CLIENT,
-      clientSecret: env.AUTH0_SECRET,
-      domain: env.AUTH0_DOMAIN,
-    })
-    await installAuth0Apps(env.AUTH0_CALLBACKS)
+    await initAuth0()
+    await installAuth0Apps(env.AUTH0_CONFIG)
     await installAuth0Roles(env.AUTH0_ADMINS)
   }
 
@@ -28,12 +18,8 @@ export class Migration20210327090939 extends Migration {
     this.addSql(`alter table "account" drop constraint "account_pkey"`)
     this.addSql(`drop table "account"`)
 
-    await setupAuth0Clients({
-      clientId: env.AUTH0_CLIENT,
-      clientSecret: env.AUTH0_SECRET,
-      domain: env.AUTH0_DOMAIN,
-    })
-    await uninstallAuth0Apps(env.AUTH0_CALLBACKS)
+    await initAuth0()
+    await uninstallAuth0Apps(env.AUTH0_CONFIG)
     await uninstallAuth0Roles()
   }
 }

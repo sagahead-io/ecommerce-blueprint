@@ -12,10 +12,16 @@ const {
   AUTH0_DOMAIN,
   AUTH0_ADMINS,
   AUTH0_FRONTEND_URL,
+  AUTH0_ADMIN_FRONTEND_URL,
   AUTH0_LOGIN_ENDPOINT,
   AUTH0_LOGOUT_ENDPOINT,
   AMQP_CONNECTION_STR,
 } = process.env
+
+const ADMIN_FRONTEND_URL = AUTH0_ADMIN_FRONTEND_URL || 'http://localhost:3001'
+const FRONTEND_URL = AUTH0_FRONTEND_URL || 'http://localhost:3000'
+const LOGIN_ENDPOINT = unslash(AUTH0_LOGIN_ENDPOINT) || 'login'
+const LOGOUT_ENDPOINT = unslash(AUTH0_LOGOUT_ENDPOINT) || 'logout'
 
 export default {
   PORT: PORT || 8091,
@@ -28,14 +34,28 @@ export default {
   AUTH0_DOMAIN: assertedVar(AUTH0_DOMAIN),
   AUTH0_ADMINS: envToArray(assertedVar(AUTH0_ADMINS)),
   AUTH0_CONNECTION: 'Username-Password-Authentication',
-  AUTH0_FRONTEND_URL: AUTH0_FRONTEND_URL || 'http://localhost:3000',
-  AUTH0_LOGIN_ENDPOINT: unslash(AUTH0_LOGIN_ENDPOINT) || 'login',
-  AUTH0_LOGOUT_ENDPOINT: unslash(AUTH0_LOGOUT_ENDPOINT) || 'logout',
-  AUTH0_CALLBACKS: {
-    callbacks: [`${AUTH0_FRONTEND_URL}`, `${AUTH0_FRONTEND_URL}/${AUTH0_LOGIN_ENDPOINT}`],
-    allowed_logout_urls: [`${AUTH0_FRONTEND_URL}`, `${AUTH0_FRONTEND_URL}/${AUTH0_LOGOUT_ENDPOINT}`],
-    web_origins: [`${AUTH0_FRONTEND_URL}`],
-    allowed_origins: [`${AUTH0_FRONTEND_URL}`],
+  AUTH0_FRONTEND_URL: FRONTEND_URL,
+  AUTH0_LOGIN_ENDPOINT: LOGIN_ENDPOINT,
+  AUTH0_LOGOUT_ENDPOINT: LOGOUT_ENDPOINT,
+  AUTH0_CONFIG: {
+    callbacks: [
+      `${FRONTEND_URL}`,
+      `${ADMIN_FRONTEND_URL}`,
+      `${ADMIN_FRONTEND_URL}/${LOGIN_ENDPOINT}`,
+      `${FRONTEND_URL}/${LOGIN_ENDPOINT}`,
+    ],
+    allowed_logout_urls: [
+      `${FRONTEND_URL}`,
+      `${ADMIN_FRONTEND_URL}`,
+      `${ADMIN_FRONTEND_URL}/${LOGOUT_ENDPOINT}`,
+      `${FRONTEND_URL}/${LOGOUT_ENDPOINT}`,
+    ],
+    web_origins: [`${FRONTEND_URL}`, `${ADMIN_FRONTEND_URL}`],
+    allowed_origins: [`${FRONTEND_URL}`, `${ADMIN_FRONTEND_URL}`],
+    oidc_conformant: true,
+    jwt_configuration: {
+      alg: 'RS256',
+    },
   } as Auth0InstallAppCallbacks,
 
   AMQP_CONNECTION_STR: AMQP_CONNECTION_STR || 'amqp://guest:guest@localhost:5672?heartbeat=30',
